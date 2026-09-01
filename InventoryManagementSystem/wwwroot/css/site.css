@@ -1,0 +1,206 @@
+:root {
+    --bg: #F6F7F9;
+    --surface: #FFFFFF;
+    --ink: #1C2530;
+    --ink-soft: #5B6672;
+    --border: #E3E7EB;
+    --sidebar-bg: #16212C;
+    --sidebar-ink: #B7C2CC;
+    --sidebar-ink-active: #FFFFFF;
+    --accent: #2F6F4E;
+    --accent-soft: #E7F1EC;
+    --warn: #C97B2C;
+    --warn-soft: #FBF0E3;
+    --danger: #B3432B;
+    --danger-soft: #FBEAE5;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Inter", -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    margin: 0;
+}
+
+h1, h2, h3, h4, .brand {
+    font-family: "Space Grotesk", "Inter", sans-serif;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+/* Layout shell */
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-ink);
+    padding: 24px 16px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
+    .sidebar .brand {
+        color: #fff;
+        font-size: 1.15rem;
+        font-weight: 600;
+        padding: 0 8px 20px 8px;
+        display: block;
+        text-decoration: none;
+    }
+
+        .sidebar .brand span {
+            color: var(--accent);
+        }
+
+    .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        color: var(--sidebar-ink);
+        text-decoration: none;
+        font-size: 0.925rem;
+        margin-bottom: 2px;
+        transition: background 0.15s ease;
+    }
+
+        .sidebar nav a:hover {
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+        }
+
+        .sidebar nav a.active {
+            background: var(--accent);
+            color: var(--sidebar-ink-active);
+        }
+
+.main-area {
+    flex: 1;
+    min-width: 0;
+}
+
+.topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+}
+
+    .topbar h1 {
+        font-size: 1.35rem;
+        margin: 0;
+    }
+
+.page-content {
+    padding: 28px 32px;
+}
+
+/* Cards */
+.panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+/* Tables */
+.table-clean {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .table-clean th {
+        text-align: left;
+        font-size: 0.8rem;
+        color: var(--ink-soft);
+        font-weight: 600;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .table-clean td {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.925rem;
+    }
+
+    .table-clean tr:last-child td {
+        border-bottom: none;
+    }
+
+    .table-clean tbody tr:hover {
+        background: var(--bg);
+    }
+
+/* Buttons */
+.btn-accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+    .btn-accent:hover {
+        background: #275c40;
+        border-color: #275c40;
+        color: #fff;
+    }
+
+.btn-outline-accent {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+}
+
+    .btn-outline-accent:hover {
+        background: var(--accent-soft);
+        color: var(--accent);
+    }
+
+/* Badges */
+.badge-soft-accent {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.badge-soft-warn {
+    background: var(--warn-soft);
+    color: var(--warn);
+    font-weight: 500;
+}
+
+.badge-soft-danger {
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-weight: 500;
+}
+
+/* Forms */
+.form-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    max-width: 560px;
+}
+
+.form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--ink-soft);
+}

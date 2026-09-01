@@ -1,0 +1,17 @@
+﻿@model Product
+@{
+    ViewData["Title"] = "Delete Product";
+}
+
+<div class="panel p-4" style="max-width:520px">
+    <p class="mb-1">Are you sure you want to delete the product:</p>
+    <h5 class="mb-1">@Model.ProductName</h5>
+    <p class="text-muted small mb-3">SKU: @Model.SKU — Category: @Model.Category.CategoryName</p>
+    <p class="text-muted small mb-4">This product cannot be deleted if it's linked to existing purchases or sales.</p>
+
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ProductId" />
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+    </form>
+</div>

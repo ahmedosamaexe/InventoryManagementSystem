@@ -1,0 +1,42 @@
+﻿@model List<Category>
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="text-muted">Total categories: @Model.Count</span>
+    <a asp-action="Create" class="btn btn-accent">+ Add Category</a>
+</div>
+
+<div class="panel">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">No categories added yet.</div>
+    }
+    else
+    {
+        <table class="table-clean">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>@c.CategoryName</td>
+                        <td class="text-muted">@(c.Description ?? "—")</td>
+                        <td class="text-nowrap">
+                            <a asp-action="Details" asp-route-id="@c.CategoryId" class="btn btn-sm btn-outline-secondary">View</a>
+                            <a asp-action="Edit" asp-route-id="@c.CategoryId" class="btn btn-sm btn-outline-accent">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@c.CategoryId" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

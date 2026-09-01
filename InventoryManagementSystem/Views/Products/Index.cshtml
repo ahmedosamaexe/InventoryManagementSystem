@@ -1,0 +1,57 @@
+﻿@model List<Product>
+@{
+    ViewData["Title"] = "Products";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="text-muted">Total products: @Model.Count</span>
+    <a asp-action="Create" class="btn btn-accent">+ Add Product</a>
+</div>
+
+<div class="panel">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">No products added yet.</div>
+    }
+    else
+    {
+        <table class="table-clean">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>@p.ProductName</td>
+                        <td class="text-muted">@p.SKU</td>
+                        <td>@p.Category.CategoryName</td>
+                        <td>@p.UnitPrice.ToString("N2")</td>
+                        <td>
+                            @if (p.StockQuantity <= p.LowStockThreshold)
+                            {
+                                <span class="badge badge-soft-danger">@p.StockQuantity (Low)</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-soft-accent">@p.StockQuantity</span>
+                            }
+                        </td>
+                        <td class="text-nowrap">
+                            <a asp-action="Details" asp-route-id="@p.ProductId" class="btn btn-sm btn-outline-secondary">View</a>
+                            <a asp-action="Edit" asp-route-id="@p.ProductId" class="btn btn-sm btn-outline-accent">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@p.ProductId" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
