@@ -24,6 +24,10 @@ public class Product
 
     // Navigation
     public Category Category { get; set; } = null!;
+
+    public ICollection<SupplierProduct> SupplierProducts { get; set; }
+    = new List<SupplierProduct>();
+
     public ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
     public ICollection<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
 }
