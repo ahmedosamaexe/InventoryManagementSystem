@@ -1,0 +1,108 @@
+﻿@model InventoryManagementSystem.Models.Supplier
+
+@{
+    ViewData["Title"] = "Delete Supplier";
+}
+
+<div class="suppliers-page">
+
+    <div class="suppliers-header">
+
+        <div class="suppliers-header-info">
+            <h2>Delete Supplier</h2>
+            <p>Confirm that you want to remove this supplier.</p>
+        </div>
+
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back
+        </a>
+
+    </div>
+
+
+    <div class="supplier-delete-panel">
+
+        <div class="supplier-delete-warning">
+
+            <strong>Warning</strong>
+
+            <div>
+                Are you sure you want to delete
+                <strong>@Model.SupplierName</strong>?
+            </div>
+
+        </div>
+
+
+        <div class="supplier-delete-details mb-4">
+
+            <div class="supplier-detail-label">
+                Supplier Name
+            </div>
+
+            <div class="supplier-detail-value">
+                @Model.SupplierName
+            </div>
+
+
+            <div class="supplier-detail-label">
+                Contact Name
+            </div>
+
+            <div class="supplier-detail-value">
+                @(string.IsNullOrWhiteSpace(Model.ContactName)
+                    ? "—"
+                    : Model.ContactName)
+            </div>
+
+
+            <div class="supplier-detail-label">
+                Phone
+            </div>
+
+            <div class="supplier-detail-value">
+                @(string.IsNullOrWhiteSpace(Model.Phone)
+                    ? "—"
+                    : Model.Phone)
+            </div>
+
+
+            <div class="supplier-detail-label">
+                Email
+            </div>
+
+            <div class="supplier-detail-value">
+                @(string.IsNullOrWhiteSpace(Model.Email)
+                    ? "—"
+                    : Model.Email)
+            </div>
+
+        </div>
+
+
+        <form asp-action="Delete" method="post">
+
+            <input type="hidden"
+                   asp-for="SupplierId" />
+
+            <div class="d-flex gap-2">
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Delete Supplier
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+

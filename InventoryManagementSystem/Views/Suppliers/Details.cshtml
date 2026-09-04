@@ -1,0 +1,194 @@
+﻿@model InventoryManagementSystem.Models.Supplier
+
+@{
+    ViewData["Title"] = "Supplier Details";
+}
+
+<div class="suppliers-page">
+
+    <div class="suppliers-header">
+
+        <div class="suppliers-header-info">
+            <h2>Supplier Details</h2>
+            <p>View supplier information and supplied products.</p>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.SupplierId"
+               class="btn btn-outline-accent">
+                Edit
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="supplier-details-panel mb-4">
+
+        <div class="row">
+
+            <div class="col-md-6">
+
+                <div class="supplier-detail-label">
+                    Supplier Name
+                </div>
+
+                <div class="supplier-detail-value">
+                    @Model.SupplierName
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <div class="supplier-detail-label">
+                    Contact Name
+                </div>
+
+                <div class="supplier-detail-value">
+                    @(string.IsNullOrWhiteSpace(Model.ContactName)
+                        ? "—"
+                        : Model.ContactName)
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <div class="supplier-detail-label">
+                    Phone
+                </div>
+
+                <div class="supplier-detail-value">
+                    @(string.IsNullOrWhiteSpace(Model.Phone)
+                        ? "—"
+                        : Model.Phone)
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6">
+
+                <div class="supplier-detail-label">
+                    Email
+                </div>
+
+                <div class="supplier-detail-value">
+
+                    @if (string.IsNullOrWhiteSpace(Model.Email))
+                    {
+                        <span>—</span>
+                    }
+                    else
+                    {
+                        <a href="mailto:@Model.Email"
+                           class="supplier-email">
+                            @Model.Email
+                        </a>
+                    }
+
+                </div>
+
+            </div>
+
+
+            <div class="col-12">
+
+                <div class="supplier-detail-label">
+                    Address
+                </div>
+
+                <div class="supplier-detail-value">
+                    @(string.IsNullOrWhiteSpace(Model.Address)
+                        ? "—"
+                        : Model.Address)
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="supplier-products-panel">
+
+        <div class="supplier-products-header">
+
+            <h3>Products Supplied</h3>
+
+        </div>
+
+
+        @if (Model.SupplierProducts == null ||
+             !Model.SupplierProducts.Any())
+        {
+            <div class="suppliers-empty">
+
+                <p>
+                    This supplier does not supply any products yet.
+                </p>
+
+            </div>
+        }
+        else
+        {
+            <table class="table-clean">
+
+                <thead>
+
+                    <tr>
+                        <th>Product Name</th>
+                        <th>SKU</th>
+                        <th>Category</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @foreach (var supplierProduct in Model.SupplierProducts)
+                    {
+                        <tr>
+
+                            <td>
+                                <span class="supplier-product-name">
+                                    @supplierProduct.Product.ProductName
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="supplier-product-sku">
+                                    @supplierProduct.Product.SKU
+                                </span>
+                            </td>
+
+                            <td>
+                                @supplierProduct.Product.Category.CategoryName
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        }
+
+    </div>
+
+</div>
