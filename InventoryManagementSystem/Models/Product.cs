@@ -1,6 +1,4 @@
-﻿using System.Net.ServerSentEvents;
-
-namespace InventoryManagementSystem.Models;
+﻿namespace InventoryManagementSystem.Models;
 
 public class Product
 {
