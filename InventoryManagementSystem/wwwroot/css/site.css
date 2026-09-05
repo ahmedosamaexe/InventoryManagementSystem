@@ -49,41 +49,41 @@ h1, h2, h3, h4, .brand {
     height: 100vh;
 }
 
-    .sidebar .brand {
-        color: #fff;
-        font-size: 1.15rem;
-        font-weight: 600;
-        padding: 0 8px 20px 8px;
-        display: block;
-        text-decoration: none;
-    }
+.sidebar .brand {
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 600;
+    padding: 0 8px 20px 8px;
+    display: block;
+    text-decoration: none;
+}
 
-        .sidebar .brand span {
-            color: var(--accent);
-        }
+.sidebar .brand span {
+    color: var(--accent);
+}
 
-    .sidebar nav a {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 12px;
-        border-radius: 8px;
-        color: var(--sidebar-ink);
-        text-decoration: none;
-        font-size: 0.925rem;
-        margin-bottom: 2px;
-        transition: background 0.15s ease;
-    }
+.sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--sidebar-ink);
+    text-decoration: none;
+    font-size: 0.925rem;
+    margin-bottom: 2px;
+    transition: background 0.15s ease;
+}
 
-        .sidebar nav a:hover {
-            background: rgba(255,255,255,0.06);
-            color: #fff;
-        }
+.sidebar nav a:hover {
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+}
 
-        .sidebar nav a.active {
-            background: var(--accent);
-            color: var(--sidebar-ink-active);
-        }
+.sidebar nav a.active {
+    background: var(--accent);
+    color: var(--sidebar-ink-active);
+}
 
 .main-area {
     flex: 1;
@@ -96,10 +96,10 @@ h1, h2, h3, h4, .brand {
     padding: 18px 32px;
 }
 
-    .topbar h1 {
-        font-size: 1.35rem;
-        margin: 0;
-    }
+.topbar h1 {
+    font-size: 1.35rem;
+    margin: 0;
+}
 
 .page-content {
     padding: 28px 32px;
@@ -118,28 +118,28 @@ h1, h2, h3, h4, .brand {
     border-collapse: collapse;
 }
 
-    .table-clean th {
-        text-align: left;
-        font-size: 0.8rem;
-        color: var(--ink-soft);
-        font-weight: 600;
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--border);
-    }
+.table-clean th {
+    text-align: left;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    font-weight: 600;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+}
 
-    .table-clean td {
-        padding: 14px 16px;
-        border-bottom: 1px solid var(--border);
-        font-size: 0.925rem;
-    }
+.table-clean td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.925rem;
+}
 
-    .table-clean tr:last-child td {
-        border-bottom: none;
-    }
+.table-clean tr:last-child td {
+    border-bottom: none;
+}
 
-    .table-clean tbody tr:hover {
-        background: var(--bg);
-    }
+.table-clean tbody tr:hover {
+    background: var(--bg);
+}
 
 /* Buttons */
 .btn-accent {
@@ -148,11 +148,11 @@ h1, h2, h3, h4, .brand {
     color: #fff;
 }
 
-    .btn-accent:hover {
-        background: #275c40;
-        border-color: #275c40;
-        color: #fff;
-    }
+.btn-accent:hover {
+    background: #275c40;
+    border-color: #275c40;
+    color: #fff;
+}
 
 .btn-outline-accent {
     border: 1px solid var(--accent);
@@ -160,10 +160,10 @@ h1, h2, h3, h4, .brand {
     background: transparent;
 }
 
-    .btn-outline-accent:hover {
-        background: var(--accent-soft);
-        color: var(--accent);
-    }
+.btn-outline-accent:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
 
 /* Badges */
 .badge-soft-accent {
@@ -203,4 +203,18 @@ h1, h2, h3, h4, .brand {
     text-align: center;
     padding: 60px 20px;
     color: var(--ink-soft);
+}
+
+/* Pagination */
+.page-link {
+    color: var(--accent);
+}
+.page-item.active .page-link {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+.page-link:hover {
+    color: var(--accent);
+    background: var(--accent-soft);
 }
