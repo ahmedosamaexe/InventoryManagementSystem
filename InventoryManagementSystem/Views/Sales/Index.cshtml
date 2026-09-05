@@ -1,0 +1,60 @@
+﻿@model IEnumerable<InventoryManagementSystem.Models.Sale>
+
+@{
+    ViewData["Title"] = "Sales";
+}
+
+<div class="sales-page">
+
+    <div class="sales-count-row">
+        <span>Total Sales: @Model.Count()</span>
+
+        <a asp-action="Create" class="btn btn-accent">
+            + New Sale
+        </a>
+    </div>
+
+    <div class="panel">
+
+        @if (!Model.Any())
+        {
+            <div class="sales-empty">
+                <p>No sales recorded yet.</p>
+            </div>
+        }
+        else
+        {
+            <table class="table-clean sales-table">
+                <thead>
+                    <tr>
+                        <th>Sale #</th>
+                        <th>Date</th>
+                        <th>Customer</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sale in Model)
+                    {
+                        <tr>
+                            <td>#@sale.SaleId</td>
+                            <td class="sale-date">@sale.SaleDate.ToString("dd MMM yyyy, HH:mm")</td>
+                            <td class="sale-customer">
+                                @(string.IsNullOrWhiteSpace(sale.CustomerInfo) ? "Walk-in customer" : sale.CustomerInfo)
+                            </td>
+                            <td>@sale.SaleItems.Sum(i => i.Quantity)</td>
+                            <td class="sale-total">@sale.TotalAmount.ToString("N2")</td>
+                            <td class="text-nowrap">
+                                <a asp-action="Details" asp-route-id="@sale.SaleId" class="btn btn-sm btn-outline-secondary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+
+</div>
