@@ -1,0 +1,174 @@
+﻿@{
+    ViewData["Title"] = "New Sale";
+    var products = (List<InventoryManagementSystem.Models.Product>)ViewBag.Products;
+}
+
+<div class="sale-form-panel">
+    <form asp-action="Create" method="post" id="saleForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="mb-3">
+            <label class="form-label">Customer Name / Info</label>
+            <input type="text" name="customerInfo" class="form-control" value="@ViewBag.CustomerInfo" placeholder="e.g. Ahmed Mostafa — leave empty for walk-in" />
+        </div>
+
+        <div class="sale-items-header">
+            <h3>Items</h3>
+            <button type="button" id="addItemBtn" class="btn btn-sm btn-outline-accent">+ Add Product</button>
+        </div>
+
+        <div id="itemsContainer"></div>
+
+        <div class="sale-summary-row">
+            <span>Total:</span>
+            <span class="sale-grand-total" id="grandTotal">0.00</span>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-accent" id="submitBtn">Complete Sale</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<datalist id="productOptions">
+    @foreach (var p in products)
+    {
+        <option value="@p.ProductName"></option>
+    }
+</datalist>
+
+@section Scripts {
+    <script>
+        const products = @Html.Raw(ViewBag.ProductsJson);
+        const productsByName = new Map(products.map(p => [p.name.trim().toLowerCase(), p]));
+
+        const itemsContainer = document.getElementById('itemsContainer');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const grandTotalEl = document.getElementById('grandTotal');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function findProduct(nameInput) {
+            return productsByName.get(nameInput.value.trim().toLowerCase());
+        }
+
+        function makeRow() {
+            const row = document.createElement('div');
+            row.className = 'sale-item-row';
+            row.innerHTML = `
+                        <div class="sale-item-field">
+                            <label>Product</label>
+                            <input type="text" class="form-control product-name-input" list="productOptions" placeholder="Type product name" autocomplete="off" />
+                            <input type="hidden" class="product-id-input" name="productIds" value="" />
+                        </div>
+                        <div class="sale-item-field">
+                            <div class="stock-hint">Available: —</div>
+                            <label>Quantity</label>
+                            <input type="number" class="form-control qty-input" name="quantities" min="1" value="1" />
+                            <div class="qty-error"></div>
+                        </div>
+                        <div class="sale-item-field">
+                            <label>Line Total</label>
+                            <div class="line-total-value">0.00</div>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-row-btn">Remove</button>
+                    `;
+
+            const nameInput = row.querySelector('.product-name-input');
+            const idInput = row.querySelector('.product-id-input');
+            const stockHint = row.querySelector('.stock-hint');
+            const qtyInput = row.querySelector('.qty-input');
+            const qtyError = row.querySelector('.qty-error');
+            const lineTotalEl = row.querySelector('.line-total-value');
+            const removeBtn = row.querySelector('.remove-row-btn');
+
+            function validateQuantity() {
+                const match = findProduct(nameInput);
+                const qty = parseInt(qtyInput.value, 10) || 0;
+
+                if (match && qty > match.stock) {
+                    qtyError.textContent = `Only ${match.stock} available in stock`;
+                    qtyInput.classList.add('is-invalid');
+                    return false;
+                }
+
+                qtyError.textContent = '';
+                qtyInput.classList.remove('is-invalid');
+                return true;
+            }
+
+            function updateLineTotal() {
+                const match = findProduct(nameInput);
+                const qty = parseInt(qtyInput.value, 10) || 0;
+                lineTotalEl.textContent = match ? (qty * match.price).toFixed(2) : '0.00';
+                updateGrandTotal();
+            }
+
+            function onProductChange() {
+                const match = findProduct(nameInput);
+
+                if (match) {
+                    idInput.value = match.id;
+                    stockHint.textContent = `Available: ${match.stock} in stock — Price: ${match.price.toFixed(2)}`;
+                } else {
+                    idInput.value = '';
+                    stockHint.textContent = 'Available: —';
+                }
+
+                validateQuantity();
+                updateLineTotal();
+                updateSubmitState();
+            }
+
+            function onQuantityChange() {
+                validateQuantity();
+                updateLineTotal();
+                updateSubmitState();
+            }
+
+            nameInput.addEventListener('input', onProductChange);
+            qtyInput.addEventListener('input', onQuantityChange);
+            removeBtn.addEventListener('click', () => {
+                row.remove();
+                updateGrandTotal();
+                updateSubmitState();
+            });
+
+            return row;
+        }
+
+        function addRow() {
+            itemsContainer.appendChild(makeRow());
+            updateSubmitState();
+        }
+
+        function updateGrandTotal() {
+            const totals = itemsContainer.querySelectorAll('.line-total-value');
+            let sum = 0;
+            totals.forEach(el => sum += parseFloat(el.textContent) || 0);
+            grandTotalEl.textContent = sum.toFixed(2);
+        }
+
+        function updateSubmitState() {
+            const hasInvalidQty = itemsContainer.querySelectorAll('.qty-input.is-invalid').length > 0;
+            submitBtn.disabled = hasInvalidQty;
+        }
+
+        addItemBtn.addEventListener('click', addRow);
+
+        document.getElementById('saleForm').addEventListener('submit', function(e) {
+            const rows = itemsContainer.querySelectorAll('.sale-item-row');
+            let hasValidItem = false;
+            rows.forEach(row => {
+                if (row.querySelector('.product-id-input').value) hasValidItem = true;
+            });
+            if (!hasValidItem) {
+                e.preventDefault();
+                alert('Please add at least one valid product to the sale.');
+            }
+        });
+
+        // Start with one empty row
+        addRow();
+    </script>
+}
