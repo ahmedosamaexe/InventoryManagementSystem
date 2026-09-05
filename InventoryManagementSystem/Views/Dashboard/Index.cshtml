@@ -2,8 +2,14 @@
 @model InventoryManagementSystem.ViewModels.DashboardViewModel
 @{
     Layout = null;
-    var chartLabels = JsonSerializer.Serialize(Model.MostSoldProducts.Select(p => p.ProductName));
-    var chartData = JsonSerializer.Serialize(Model.MostSoldProducts.Select(p => p.QuantitySold));
+    var dailyLabels = JsonSerializer.Serialize(Model.DailySeries.Select(d => d.Label));
+    var dailySales = JsonSerializer.Serialize(Model.DailySeries.Select(d => d.Sales));
+    var dailyPurchases = JsonSerializer.Serialize(Model.DailySeries.Select(d => d.Purchases));
+    var yearLabels = JsonSerializer.Serialize(Model.TopSellingYear.Select(p => p.ProductName));
+    var yearData = JsonSerializer.Serialize(Model.TopSellingYear.Select(p => p.QuantitySold));
+    var custLabels = JsonSerializer.Serialize(Model.TopCustomers.Select(c => c.Customer));
+    var custData = JsonSerializer.Serialize(Model.TopCustomers.Select(c => c.Total));
+    var palette = new[] { "#3b82f6", "#10b981", "#f59e0b", "#6366f1", "#ef4444" };
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -11,21 +17,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management Dashboard</title>
-    <!-- Tailwind CSS للستايل والألوان -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome للأيقونات -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js للرسوم البيانية -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        sidebar: '#1a222c', // لون الشريط الجانبي من الصورة
-                        sysGreen: '#6e987c', // لون كلمة Sys من الصورة
-                        bgLight: '#f4f6f9'  // لون الخلفية
+                        sidebar: '#1a222c',
+                        sysGreen: '#6e987c',
+                        bgLight: '#f4f6f9'
                     }
                 }
             }
@@ -36,12 +38,9 @@
 
     <!-- Sidebar -->
     <aside class="w-64 bg-sidebar text-gray-300 flex flex-col h-full shadow-lg z-10">
-        <!-- Logo -->
         <div class="h-16 flex items-center px-6 font-bold text-2xl tracking-wide text-white bg-sidebar border-b border-gray-700/50">
             Inventory<span class="text-sysGreen">Sys</span>
         </div>
-
-        <!-- Navigation Links -->
         <nav class="flex-1 py-4 overflow-y-auto space-y-1">
             <a asp-controller="Home" asp-action="Index" class="block px-6 py-3 hover:bg-gray-800 hover:text-white transition-colors duration-200">Home</a>
             <a asp-controller="Dashboard" asp-action="Index" class="block px-6 py-3 text-white bg-gray-800/50 border-l-4 border-sysGreen font-medium">Dashboard</a>
@@ -57,103 +56,123 @@
     <div class="flex-1 flex flex-col h-full overflow-hidden">
 
         <!-- Top Navbar -->
-        <header class="h-16 bg-white shadow-sm flex items-center px-8 border-b border-gray-200 z-0">
-            <h1 class="text-xl font-semibold text-gray-700">Dashboard Overview</h1>
+        <header class="bg-white shadow-sm px-8 py-4 border-b border-gray-200 z-0">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-xl font-semibold text-gray-700">Dashboard</h1>
+                    <p class="text-sm text-gray-400">Welcome back! Here's what's happening.</p>
+                </div>
+                <form method="get" class="flex items-center gap-2 text-sm">
+                    <input type="date" name="from" value="@Model.From.ToString("yyyy-MM-dd")" class="border border-gray-300 rounded px-2 py-1 text-gray-700" />
+                    <span class="text-gray-400">-</span>
+                    <input type="date" name="to" value="@Model.To.ToString("yyyy-MM-dd")" class="border border-gray-300 rounded px-2 py-1 text-gray-700" />
+                    <button type="submit" class="bg-sidebar text-white rounded px-4 py-1 hover:bg-gray-800">Apply</button>
+                </form>
+            </div>
         </header>
 
         <!-- Dashboard Content -->
         <main class="flex-1 overflow-x-hidden overflow-y-auto bg-bgLight p-8">
 
-            <!-- KPI Cards Grid (بيانات حقيقية من الداتابيز) -->
+            <!-- KPI Cards (live data) -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-
-                <!-- Total Products -->
                 <div class="bg-white rounded-lg shadow-sm p-6 flex items-center border border-gray-100">
-                    <div class="p-4 rounded-full bg-blue-100 text-blue-600 mr-4">
-                        <i class="fas fa-box fa-lg"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Total Products</p>
-                        <p class="text-2xl font-bold text-gray-700">@Model.TotalProducts.ToString("N0")</p>
-                    </div>
+                    <div class="p-4 rounded-full bg-emerald-100 text-emerald-600 mr-4"><i class="fas fa-chart-line fa-lg"></i></div>
+                    <div><p class="text-sm text-gray-500 font-medium">Total Sales</p><p class="text-2xl font-bold text-gray-700">$@Model.SalesTotal.ToString("N2")</p></div>
                 </div>
-
-                <!-- Total Stock Quantity -->
                 <div class="bg-white rounded-lg shadow-sm p-6 flex items-center border border-gray-100">
-                    <div class="p-4 rounded-full bg-green-100 text-green-600 mr-4">
-                        <i class="fas fa-cubes fa-lg"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Total Stock Qty</p>
-                        <p class="text-2xl font-bold text-gray-700">@Model.TotalStockQuantity.ToString("N0")</p>
-                    </div>
+                    <div class="p-4 rounded-full bg-orange-100 text-orange-600 mr-4"><i class="fas fa-shopping-cart fa-lg"></i></div>
+                    <div><p class="text-sm text-gray-500 font-medium">Total Purchases</p><p class="text-2xl font-bold text-gray-700">$@Model.PurchasesTotal.ToString("N2")</p></div>
                 </div>
-
-                <!-- Low-Stock Alerts -->
-                <div class="bg-white rounded-lg shadow-sm p-6 flex items-center border border-red-100">
-                    <div class="p-4 rounded-full bg-red-100 text-red-600 mr-4">
-                        <i class="fas fa-exclamation-triangle fa-lg"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-red-500 font-medium">Low-Stock Alerts</p>
-                        <p class="text-2xl font-bold text-red-600">@Model.LowStockCount Items</p>
-                    </div>
-                </div>
-
-                <!-- Total Categories & Suppliers -->
                 <div class="bg-white rounded-lg shadow-sm p-6 flex items-center border border-gray-100">
-                    <div class="p-4 rounded-full bg-purple-100 text-purple-600 mr-4">
-                        <i class="fas fa-tags fa-lg"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Categories / Suppliers</p>
-                        <p class="text-2xl font-bold text-gray-700">@Model.TotalCategories / @Model.TotalSuppliers</p>
-                    </div>
+                    <div class="p-4 rounded-full bg-blue-100 text-blue-600 mr-4"><i class="fas fa-receipt fa-lg"></i></div>
+                    <div><p class="text-sm text-gray-500 font-medium">Invoice</p><p class="text-2xl font-bold text-gray-700">@Model.InvoiceCount.ToString("N0")</p></div>
                 </div>
-
-                <!-- Total Sales (Count & Revenue) -->
                 <div class="bg-white rounded-lg shadow-sm p-6 flex items-center border border-gray-100">
-                    <div class="p-4 rounded-full bg-emerald-100 text-emerald-600 mr-4">
-                        <i class="fas fa-chart-line fa-lg"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Total Sales Revenue</p>
-                        <p class="text-2xl font-bold text-gray-700">$@Model.TotalSalesRevenue.ToString("N0")</p>
-                        <p class="text-xs text-emerald-600 font-medium mt-1">+@Model.TotalSalesCount.ToString("N0") Orders</p>
-                    </div>
-                </div>
-
-                <!-- Total Purchases (Count & Monetary) -->
-                <div class="bg-white rounded-lg shadow-sm p-6 flex items-center border border-gray-100">
-                    <div class="p-4 rounded-full bg-orange-100 text-orange-600 mr-4">
-                        <i class="fas fa-shopping-cart fa-lg"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500 font-medium">Total Purchases Cost</p>
-                        <p class="text-2xl font-bold text-gray-700">$@Model.TotalPurchasesCost.ToString("N0")</p>
-                        <p class="text-xs text-orange-600 font-medium mt-1">+@Model.TotalPurchasesCount.ToString("N0") Orders</p>
-                    </div>
+                    <div class="p-4 rounded-full bg-green-100 text-green-600 mr-4"><i class="fas fa-sack-dollar fa-lg"></i></div>
+                    <div><p class="text-sm text-gray-500 font-medium">Profit</p><p class="text-2xl font-bold text-gray-700">$@Model.Profit.ToString("N2")</p></div>
                 </div>
             </div>
 
-            <!-- Charts and Activity Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Catalog summary strip -->
+            <div class="bg-sidebar text-gray-300 rounded-lg shadow-sm px-6 py-4 mb-8 flex flex-wrap gap-x-8 gap-y-2 text-sm">
+                <span><i class="fas fa-box text-sysGreen mr-2"></i>Total Products: <strong class="text-white">@Model.TotalProducts.ToString("N0")</strong></span>
+                <span><i class="fas fa-tags text-sysGreen mr-2"></i>Total Categories: <strong class="text-white">@Model.TotalCategories.ToString("N0")</strong></span>
+                <span><i class="fas fa-truck-field text-sysGreen mr-2"></i>Total Suppliers: <strong class="text-white">@Model.TotalSuppliers.ToString("N0")</strong></span>
+                <span><i class="fas fa-cubes text-sysGreen mr-2"></i>Total Stock Quantity: <strong class="text-white">@Model.TotalStockQuantity.ToString("N0")</strong></span>
+                <span><i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>Low-Stock Products: <strong class="text-white">@Model.LowStockCount items</strong></span>
+            </div>
 
-                <!-- Most Sold Products Chart -->
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 lg:col-span-1">
-                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Most Sold Products</h2>
-                    @if (Model.MostSoldProducts.Any())
+            <!-- Sales & Purchases + Payment Sent & Received -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Sales &amp; Purchases</h2>
+                    <div class="h-64"><canvas id="salesPurchasesChart"></canvas></div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Payment Sent &amp; Received</h2>
+                    <div class="h-64"><canvas id="paymentsChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Most Sold (September) + Most Sold (year) + Top Customers -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Most Sold Products (@Model.To.ToString("MMMM"))</h2>
+                    @if (Model.TopSellingMonth.Any())
                     {
-                        <canvas id="topProductsChart" height="250"></canvas>
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-gray-500 text-sm border-b">
+                                    <th class="pb-3 font-medium">Product Name</th>
+                                    <th class="pb-3 font-medium">Total Sales</th>
+                                    <th class="pb-3 font-medium">Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                @foreach (var p in Model.TopSellingMonth)
+                                {
+                                    <tr class="border-b border-gray-50 hover:bg-gray-50">
+                                        <td class="py-3 text-gray-800">@p.ProductName</td>
+                                        <td class="py-3 text-gray-600">@p.QuantitySold</td>
+                                        <td class="py-3 font-medium text-gray-700">$@p.Revenue.ToString("N2")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-sm text-gray-400 py-6 text-center">No sales this month yet.</p>
+                    }
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Most Sold Products (@Model.To.Year)</h2>
+                    @if (Model.TopSellingYear.Any())
+                    {
+                        <div class="h-64"><canvas id="topYearChart"></canvas></div>
                     }
                     else
                     {
                         <p class="text-sm text-gray-400 py-10 text-center">No sales recorded yet.</p>
                     }
                 </div>
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Top 5 Customers (@Model.To.ToString("MMMM"))</h2>
+                    @if (Model.TopCustomers.Any())
+                    {
+                        <div class="h-64"><canvas id="topCustomersChart"></canvas></div>
+                    }
+                    else
+                    {
+                        <p class="text-sm text-gray-400 py-10 text-center">No customers yet.</p>
+                    }
+                </div>
+            </div>
 
-                <!-- Recent Activity Log (Sales & Purchases) -->
-                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 lg:col-span-2">
+            <!-- Recent Activity Log (live sales + purchases feed) -->
+            <div class="grid grid-cols-1 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
                     <h2 class="text-lg font-semibold text-gray-700 mb-4">Recent Activity Log</h2>
                     <div class="overflow-x-auto">
                         @if (Model.RecentActivities.Any())
@@ -202,44 +221,114 @@
                         }
                         else
                         {
-                            <p class="text-sm text-gray-400 py-6 text-center">No recent sales or purchases.</p>
+                            <p class="text-sm text-gray-400 py-6 text-center">No recent activity yet.</p>
                         }
                     </div>
                 </div>
-
             </div>
+
+            <!-- Stock Alert -->
+            <div class="grid grid-cols-1 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-700">Stock Alert</h2>
+                        <a asp-controller="Products" asp-action="Index" class="text-sm text-sysGreen font-medium hover:underline">View All</a>
+                    </div>
+                    <div class="overflow-x-auto">
+                        @if (Model.StockAlerts.Any())
+                        {
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="text-gray-500 text-sm border-b">
+                                        <th class="pb-3 font-medium">Code</th>
+                                        <th class="pb-3 font-medium">Product Name</th>
+                                        <th class="pb-3 font-medium">Quantity</th>
+                                        <th class="pb-3 font-medium">Alert Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm">
+                                    @foreach (var s in Model.StockAlerts)
+                                    {
+                                        <tr class="border-b border-gray-50 hover:bg-gray-50">
+                                            <td class="py-3 text-gray-600">@s.SKU</td>
+                                            <td class="py-3 text-gray-800">@s.ProductName</td>
+                                            <td class="py-3 font-medium text-red-600">@s.StockQuantity</td>
+                                            <td class="py-3 text-gray-600">@s.AlertQuantity</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p class="text-sm text-gray-400 py-6 text-center">No stock alerts. All good!</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
-    <!-- تهيئة الرسم البياني (Chart.js) ببيانات حقيقية -->
-    @if (Model.MostSoldProducts.Any())
-    {
-        <script>
-            const ctx = document.getElementById('topProductsChart').getContext('2d');
-            const topProductsChart = new Chart(ctx, {
+    <script>
+        const palette = @Html.Raw(JsonSerializer.Serialize(palette));
+        const chartOpts = (extra) => Object.assign({
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { padding: 20, boxWidth: 12 } } }
+        }, extra || {});
+
+        new Chart(document.getElementById('salesPurchasesChart'), {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(dailyLabels),
+                datasets: [
+                    { label: 'Sales', data: @Html.Raw(dailySales), backgroundColor: '#10b981' },
+                    { label: 'Purchases', data: @Html.Raw(dailyPurchases), backgroundColor: '#f59e0b' }
+                ]
+            },
+            options: chartOpts({ plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } })
+        });
+
+        @if (Model.TopSellingYear.Any())
+        {
+            <text>
+            new Chart(document.getElementById('topYearChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: @Html.Raw(chartLabels),
-                    datasets: [{
-                        label: 'Units Sold',
-                        data: @Html.Raw(chartData),
-                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#6366f1', '#ef4444'],
-                        borderWidth: 0
-                    }]
+                    labels: @Html.Raw(yearLabels),
+                    datasets: [{ label: 'Units Sold', data: @Html.Raw(yearData), backgroundColor: palette, borderWidth: 0 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { padding: 20, boxWidth: 12 }
-                        }
-                    },
-                    cutout: '70%'
-                }
+                options: chartOpts({ cutout: '70%' })
             });
-        </script>
-    }
+            </text>
+        }
+
+        new Chart(document.getElementById('paymentsChart'), {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(dailyLabels),
+                datasets: [
+                    { label: 'Payment Received', data: @Html.Raw(dailySales), borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.3 },
+                    { label: 'Payment Sent', data: @Html.Raw(dailyPurchases), borderColor: '#ef4444', backgroundColor: '#ef4444', tension: 0.3 }
+                ]
+            },
+            options: chartOpts({ plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true } } })
+        });
+
+        @if (Model.TopCustomers.Any())
+        {
+            <text>
+            new Chart(document.getElementById('topCustomersChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: @Html.Raw(custLabels),
+                    datasets: [{ label: 'Total', data: @Html.Raw(custData), backgroundColor: palette, borderWidth: 0 }]
+                },
+                options: chartOpts({ cutout: '70%' })
+            });
+            </text>
+        }
+    </script>
 </body>
 </html>
