@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Controllers;
+namespace InventoryManagementSystem.Controllers;
 
 public class CategoriesController : Controller
 {
@@ -83,11 +83,26 @@ public class CategoriesController : Controller
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var category = await _context.Categories.FindAsync(id);
-        if (category != null)
+        if (category == null) return RedirectToAction(nameof(Index));
+
+        var hasProducts = await _context.Products.AnyAsync(p => p.CategoryId == id);
+        if (hasProducts)
+        {
+            TempData["Error"] = "Cannot delete this category because it has related products.";
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+
+        try
         {
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
         }
+        catch (DbUpdateException)
+        {
+            TempData["Error"] = "Cannot delete this category because it has related products.";
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+
         return RedirectToAction(nameof(Index));
     }
 }

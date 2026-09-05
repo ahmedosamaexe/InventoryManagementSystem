@@ -1,9 +1,13 @@
-﻿@model Category
+@model Category
 @{
     ViewData["Title"] = "Delete Category";
 }
 
 <div class="panel p-4" style="max-width:520px">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mb-3" role="alert">@TempData["Error"]</div>
+    }
     <p class="mb-1">Are you sure you want to delete the category:</p>
     <h5 class="mb-3">@Model.CategoryName</h5>
     <p class="text-muted small mb-4">This category cannot be deleted if it's linked to existing products.</p>
