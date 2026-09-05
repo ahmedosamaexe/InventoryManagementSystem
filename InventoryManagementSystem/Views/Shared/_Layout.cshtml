@@ -33,7 +33,7 @@
                 {
                     <div class="alert alert-success" role="alert">@TempData["Success"]</div>
                 }
-                @if (TempData["Error"] != null && ViewData["Title"]?.ToString() != "Delete Product")
+                @if (TempData["Error"] != null && ViewData["Title"]?.ToString() != "Delete Product" && ViewData["Title"]?.ToString() != "Delete Category" && ViewData["Title"]?.ToString() != "Delete Supplier")
                 {
                     <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
                 }

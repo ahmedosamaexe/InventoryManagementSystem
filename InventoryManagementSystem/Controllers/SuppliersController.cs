@@ -1,4 +1,4 @@
-﻿using InventoryManagementSystem.Data;
+using InventoryManagementSystem.Data;
 using InventoryManagementSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -153,12 +153,26 @@ public class SuppliersController : Controller
 
         if (supplier == null)
         {
-            return NotFound();
+            return RedirectToAction(nameof(Index));
         }
 
-        _context.Suppliers.Remove(supplier);
+        var hasPurchases = await _context.Purchases.AnyAsync(p => p.SupplierId == id);
+        if (hasPurchases)
+        {
+            TempData["Error"] = "Cannot delete this supplier because it has related purchase records.";
+            return RedirectToAction(nameof(Delete), new { id });
+        }
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            _context.Suppliers.Remove(supplier);
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            TempData["Error"] = "Cannot delete this supplier because it has related purchase records.";
+            return RedirectToAction(nameof(Delete), new { id });
+        }
 
         return RedirectToAction(nameof(Index));
     }
