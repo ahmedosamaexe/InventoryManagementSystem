@@ -1,0 +1,113 @@
+@model InventoryManagementSystem.ViewModels.PurchaseCreateViewModel
+@{
+    ViewData["Title"] = "New Purchase";
+    var suppliers = (List<InventoryManagementSystem.Models.Supplier>)ViewBag.Suppliers;
+    var products = (List<InventoryManagementSystem.Models.Product>)ViewBag.Products;
+}
+
+<h1>New Purchase</h1>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<form asp-action="Create" method="post" id="purchaseForm">
+    <div class="mb-3">
+        <label class="form-label">Supplier</label>
+        <select name="SupplierId" class="form-select" required>
+            <option value="">-- Select Supplier --</option>
+            @foreach (var s in suppliers)
+            {
+                <option value="@s.SupplierId">@s.SupplierName</option>
+            }
+        </select>
+    </div>
+
+    <h4>Items</h4>
+    <table class="table" id="itemsTable">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Cost</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- rows are added here by JS -->
+        </tbody>
+    </table>
+
+    <button type="button" id="addRowBtn" class="btn btn-secondary mb-3">+ Add Product</button>
+    <br />
+    <button type="submit" class="btn btn-primary">Save Purchase</button>
+</form>
+
+<!-- Template for a product select, filled by JS -->
+<script id="productOptionsTemplate" type="text/template">
+    @foreach (var p in products)
+    {
+        <text><option value="@p.ProductId">@p.ProductName (@p.UnitPrice.ToString("C"))</option></text>
+    }
+</script>
+
+<script>
+    let rowIndex = 0;
+    const productOptionsHtml = document.getElementById('productOptionsTemplate').innerHTML;
+
+    function addRow() {
+        const tbody = document.querySelector('#itemsTable tbody');
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <select name="Items[${rowIndex}].ProductId" class="form-select" required>
+                    <option value="">-- Select Product --</option>
+                    ${productOptionsHtml}
+                </select>
+            </td>
+            <td>
+                <input type="number" name="Items[${rowIndex}].Quantity" min="1" class="form-control qty-input" required />
+                <span class="text-danger error-msg" style="display:none;">Quantity must be greater than 0</span>
+            </td>
+            <td>
+                <input type="number" step="0.01" name="Items[${rowIndex}].UnitCost" min="0" class="form-control cost-input" required />
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+        rowIndex++;
+    }
+
+    document.getElementById('addRowBtn').addEventListener('click', addRow);
+
+    // Remove row
+    document.querySelector('#itemsTable tbody').addEventListener('click', function (e) {
+        if (e.target.classList.contains('remove-row')) {
+            e.target.closest('tr').remove();
+        }
+    });
+
+    // Simple client-side validation: quantity must be a positive number
+    document.getElementById('purchaseForm').addEventListener('submit', function (e) {
+        let valid = true;
+        document.querySelectorAll('.qty-input').forEach(input => {
+            const errorSpan = input.nextElementSibling;
+            if (!input.value || Number(input.value) <= 0) {
+                errorSpan.style.display = 'inline';
+                valid = false;
+            } else {
+                errorSpan.style.display = 'none';
+            }
+        });
+
+        if (document.querySelectorAll('#itemsTable tbody tr').length === 0) {
+            alert('Add at least one product before saving.');
+            valid = false;
+        }
+
+        if (!valid) e.preventDefault();
+    });
+
+    // Start with one row by default
+    addRow();
+</script>
