@@ -1,8 +1,139 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InventorySys - Smart Inventory Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sidebar: '#1a222c',
+                        sysGreen: '#6e987c',
+                        bgLight: '#f4f6f9'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-bgLight font-sans text-gray-800">
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <!-- Navbar -->
+    <nav class="bg-sidebar text-gray-300 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a asp-controller="Home" asp-action="Index" class="font-bold text-2xl tracking-wide text-white">Inventory<span class="text-sysGreen">Sys</span></a>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                <a asp-controller="Home" asp-action="Index" class="text-white">Home</a>
+                <a asp-controller="Dashboard" asp-action="Index" class="hover:text-white transition-colors">Dashboard</a>
+                <a asp-controller="Products" asp-action="Index" class="hover:text-white transition-colors">Products</a>
+                <a asp-controller="Purchases" asp-action="Index" class="hover:text-white transition-colors">Purchases</a>
+                <a asp-controller="Suppliers" asp-action="Index" class="hover:text-white transition-colors">Suppliers</a>
+            </div>
+            <a asp-controller="Dashboard" asp-action="Index" class="bg-sysGreen text-white text-sm font-semibold rounded px-5 py-2 hover:opacity-90 transition-opacity">Open Dashboard</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="bg-sidebar text-white overflow-hidden min-h-[calc(100vh-4rem)] flex items-center">
+        <div class="max-w-7xl mx-auto px-6 py-24 md:py-28 grid grid-cols-1 md:grid-cols-2 gap-12 items-center w-full">
+            <div>
+                <p class="inline-block text-xs font-semibold tracking-widest uppercase bg-sysGreen/20 text-sysGreen rounded-full px-4 py-1 mb-6">Inventory Management System</p>
+                <h1 class="text-4xl md:text-5xl font-bold leading-tight mb-6">Every product. Every supplier. <span class="text-sysGreen">Under control.</span></h1>
+                <p class="text-gray-400 text-lg mb-8">Track stock in real time, manage purchases and sales, and get instant alerts before anything runs out — all from one dashboard.</p>
+                <div class="flex flex-wrap gap-4">
+                    <a asp-controller="Dashboard" asp-action="Index" class="bg-sysGreen text-white font-semibold rounded px-7 py-3 hover:opacity-90 transition-opacity"><i class="fas fa-chart-line mr-2"></i>Explore Dashboard</a>
+                    <a asp-controller="Products" asp-action="Index" class="border border-gray-600 text-gray-200 font-semibold rounded px-7 py-3 hover:bg-gray-800 transition-colors"><i class="fas fa-box mr-2"></i>Browse Products</a>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-800/60 rounded-lg p-6 text-center border border-gray-700/50">
+                    <i class="fas fa-box text-sysGreen text-3xl mb-3"></i>
+                    <p class="text-3xl font-bold">@ViewBag.TotalProducts</p>
+                    <p class="text-sm text-gray-400 mt-1">Products</p>
+                </div>
+                <div class="bg-gray-800/60 rounded-lg p-6 text-center border border-gray-700/50">
+                    <i class="fas fa-tags text-sysGreen text-3xl mb-3"></i>
+                    <p class="text-3xl font-bold">@ViewBag.TotalCategories</p>
+                    <p class="text-sm text-gray-400 mt-1">Categories</p>
+                </div>
+                <div class="bg-gray-800/60 rounded-lg p-6 text-center border border-gray-700/50">
+                    <i class="fas fa-truck-field text-sysGreen text-3xl mb-3"></i>
+                    <p class="text-3xl font-bold">@ViewBag.TotalSuppliers</p>
+                    <p class="text-sm text-gray-400 mt-1">Suppliers</p>
+                </div>
+                <div class="bg-gray-800/60 rounded-lg p-6 text-center border border-gray-700/50">
+                    <i class="fas fa-receipt text-sysGreen text-3xl mb-3"></i>
+                    <p class="text-3xl font-bold">@ViewBag.TotalSales</p>
+                    <p class="text-sm text-gray-400 mt-1">Sales Orders</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features -->
+    <main class="max-w-7xl mx-auto px-6 py-16">
+        <h2 class="text-2xl font-bold text-gray-700 text-center mb-2">Everything you need to run your stock</h2>
+        <p class="text-gray-400 text-center mb-10">Simple tools that keep your inventory accurate around the clock.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600 inline-block mb-4"><i class="fas fa-box fa-lg"></i></div>
+                <h3 class="font-semibold text-gray-700 mb-2">Product Management</h3>
+                <p class="text-sm text-gray-500">Add, edit and organize products with SKU, pricing and categories.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="p-3 rounded-full bg-orange-100 text-orange-600 inline-block mb-4"><i class="fas fa-shopping-cart fa-lg"></i></div>
+                <h3 class="font-semibold text-gray-700 mb-2">Purchases</h3>
+                <p class="text-sm text-gray-500">Record supplier orders and watch stock increase automatically.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="p-3 rounded-full bg-emerald-100 text-emerald-600 inline-block mb-4"><i class="fas fa-chart-line fa-lg"></i></div>
+                <h3 class="font-semibold text-gray-700 mb-2">Sales Tracking</h3>
+                <p class="text-sm text-gray-500">Create sales orders with automatic stock deduction and totals.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="p-3 rounded-full bg-red-100 text-red-600 inline-block mb-4"><i class="fas fa-exclamation-triangle fa-lg"></i></div>
+                <h3 class="font-semibold text-gray-700 mb-2">Low-Stock Alerts</h3>
+                <p class="text-sm text-gray-500">Get warned before items run out so you can reorder in time.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="p-3 rounded-full bg-purple-100 text-purple-600 inline-block mb-4"><i class="fas fa-truck-field fa-lg"></i></div>
+                <h3 class="font-semibold text-gray-700 mb-2">Supplier Profiles</h3>
+                <p class="text-sm text-gray-500">Keep contacts and see which products each supplier provides.</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="p-3 rounded-full bg-green-100 text-green-600 inline-block mb-4"><i class="fas fa-gauge-high fa-lg"></i></div>
+                <h3 class="font-semibold text-gray-700 mb-2">Live Dashboard</h3>
+                <p class="text-sm text-gray-500">Revenue, top products and recent activity — updated in real time.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- CTA band -->
+    <section class="bg-sidebar">
+        <div class="max-w-7xl mx-auto px-6 py-14 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-3">Ready to take control of your inventory?</h2>
+            <p class="text-gray-400 mb-8">Jump into the dashboard and see your stock health at a glance.</p>
+            <a asp-controller="Dashboard" asp-action="Index" class="bg-sysGreen text-white font-semibold rounded px-8 py-3 hover:opacity-90 transition-opacity inline-block">Go to Dashboard<i class="fas fa-arrow-right ml-2"></i></a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-sidebar border-t border-gray-700/50">
+        <div class="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-gray-500">
+            <span class="font-bold text-lg text-white">Inventory<span class="text-sysGreen">Sys</span></span>
+            <div class="flex space-x-6">
+                <a asp-controller="Dashboard" asp-action="Index" class="hover:text-white transition-colors">Dashboard</a>
+                <a asp-controller="Products" asp-action="Index" class="hover:text-white transition-colors">Products</a>
+                <a asp-controller="Categories" asp-action="Index" class="hover:text-white transition-colors">Categories</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

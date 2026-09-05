@@ -6,8 +6,19 @@ namespace InventoryManagementSystem.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly AppDbContext _context;
+
+        public HomeController(AppDbContext context)
         {
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            ViewBag.TotalProducts = await _context.Products.CountAsync();
+            ViewBag.TotalCategories = await _context.Categories.CountAsync();
+            ViewBag.TotalSuppliers = await _context.Suppliers.CountAsync();
+            ViewBag.TotalSales = await _context.Sales.CountAsync();
             return View();
         }
 
