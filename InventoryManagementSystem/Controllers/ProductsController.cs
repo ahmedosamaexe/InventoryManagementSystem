@@ -10,11 +10,49 @@ public class ProductsController : Controller
     }
 
     // GET: Products
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? search, int? categoryId, string? status, int page = 1)
     {
-        var products = await _context.Products
-            .Include(p => p.Category)
+        const int pageSize = 8;
+
+        var query = _context.Products.Include(p => p.Category).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(p => p.ProductName.Contains(search) || p.SKU.Contains(search));
+        }
+
+        if (categoryId.HasValue)
+        {
+            query = query.Where(p => p.CategoryId == categoryId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            query = status switch
+            {
+                "OutOfStock" => query.Where(p => p.StockQuantity == 0),
+                "LowStock" => query.Where(p => p.StockQuantity > 0 && p.StockQuantity <= p.LowStockThreshold),
+                "InStock" => query.Where(p => p.StockQuantity > p.LowStockThreshold),
+                _ => query
+            };
+        }
+
+        var totalItems = await query.CountAsync();
+        var totalPages = Math.Max(1, (int)Math.Ceiling(totalItems / (double)pageSize));
+        page = Math.Max(1, Math.Min(page, totalPages));
+
+        var products = await query
+            .OrderBy(p => p.ProductName)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        ViewBag.Categories = await _context.Categories.ToListAsync();
+        ViewBag.CurrentSearch = search;
+        ViewBag.CurrentCategory = categoryId;
+        ViewBag.CurrentStatus = status;
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
 
         return View(products);
     }

@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<SupplierProduct> SupplierProducts { get; set; }
     public DbSet<Purchase> Purchases { get; set; }
     public DbSet<PurchaseItem> PurchaseItems { get; set; }
     public DbSet<Sale> Sales { get; set; }
@@ -30,6 +31,22 @@ public class AppDbContext : DbContext
             .WithMany(c => c.Products)
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // SupplierProduct (many-to-many join entity)
+        modelBuilder.Entity<SupplierProduct>()
+            .HasKey(sp => new { sp.SupplierId, sp.ProductId });
+
+        modelBuilder.Entity<SupplierProduct>()
+            .HasOne(sp => sp.Supplier)
+            .WithMany(s => s.SupplierProducts)
+            .HasForeignKey(sp => sp.SupplierId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SupplierProduct>()
+            .HasOne(sp => sp.Product)
+            .WithMany(p => p.SupplierProducts)
+            .HasForeignKey(sp => sp.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Purchase
         modelBuilder.Entity<Purchase>()
