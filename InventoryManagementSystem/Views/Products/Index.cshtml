@@ -5,10 +5,12 @@
 
 <form method="get" asp-action="Index" class="row g-2 mb-3">
     <div class="col-md-4">
-        <input type="text" name="search" value="@ViewBag.CurrentSearch" class="form-control" placeholder="Search by name or SKU..." />
+        <label for="searchInput" class="visually-hidden">Search products</label>
+        <input id="searchInput" type="text" name="search" value="@ViewBag.CurrentSearch" class="form-control" placeholder="Search by name or SKU..." aria-label="Search by product name or SKU" />
     </div>
     <div class="col-md-3">
-        <select name="categoryId" class="form-select">
+        <label for="categorySelect" class="visually-hidden">Filter by category</label>
+        <select id="categorySelect" name="categoryId" class="form-select" aria-label="Filter by category">
             <option value="">All Categories</option>
             @foreach (var c in (List<Category>)ViewBag.Categories)
             {
@@ -17,7 +19,8 @@
         </select>
     </div>
     <div class="col-md-3">
-        <select name="status" class="form-select">
+        <label for="statusSelect" class="visually-hidden">Filter by stock status</label>
+        <select id="statusSelect" name="status" class="form-select" aria-label="Filter by stock status">
             <option value="">All Statuses</option>
             <option value="InStock" selected="@(ViewBag.CurrentStatus == "InStock" ? "selected" : null)">In Stock</option>
             <option value="LowStock" selected="@(ViewBag.CurrentStatus == "LowStock" ? "selected" : null)">Low Stock</option>
@@ -37,7 +40,9 @@
 <div class="panel">
     @if (!Model.Any())
     {
-        <div class="empty-state">No products match your search.</div>
+        <div class="empty-state">
+            @(ViewBag.HasActiveFilters ? "No products match your search." : "No products added yet.")
+        </div>
     }
     else
     {
@@ -104,7 +109,24 @@
                    asp-route-status="@ViewBag.CurrentStatus"
                    asp-route-page="@(ViewBag.CurrentPage - 1)">Previous</a>
             </li>
-            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+
+            @{
+                int startPage = Math.Max(1, ViewBag.CurrentPage - 2);
+                int endPage = Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2);
+            }
+
+            @if (startPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index" asp-route-search="@ViewBag.CurrentSearch" asp-route-categoryId="@ViewBag.CurrentCategory" asp-route-status="@ViewBag.CurrentStatus" asp-route-page="1">1</a>
+                </li>
+                @if (startPage > 2)
+                {
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                }
+            }
+
+            @for (int i = startPage; i <= endPage; i++)
             {
                 <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
                     <a class="page-link" asp-action="Index"
@@ -114,6 +136,18 @@
                        asp-route-page="@i">@i</a>
                 </li>
             }
+
+            @if (endPage < ViewBag.TotalPages)
+            {
+                @if (endPage < ViewBag.TotalPages - 1)
+                {
+                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                }
+                <li class="page-item">
+                    <a class="page-link" asp-action="Index" asp-route-search="@ViewBag.CurrentSearch" asp-route-categoryId="@ViewBag.CurrentCategory" asp-route-status="@ViewBag.CurrentStatus" asp-route-page="@ViewBag.TotalPages">@ViewBag.TotalPages</a>
+                </li>
+            }
+
             <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
                 <a class="page-link" asp-action="Index"
                    asp-route-search="@ViewBag.CurrentSearch"

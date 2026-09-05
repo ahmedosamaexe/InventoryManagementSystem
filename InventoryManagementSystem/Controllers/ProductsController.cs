@@ -53,6 +53,7 @@ public class ProductsController : Controller
         ViewBag.CurrentStatus = status;
         ViewBag.CurrentPage = page;
         ViewBag.TotalPages = totalPages;
+        ViewBag.HasActiveFilters = !string.IsNullOrWhiteSpace(search) || categoryId.HasValue || !string.IsNullOrWhiteSpace(status);
 
         return View(products);
     }
