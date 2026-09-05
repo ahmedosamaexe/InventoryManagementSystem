@@ -152,14 +152,14 @@ public class ProductsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var product = await _context.Products
-            .Include(p => p.PurchaseItems)
-            .Include(p => p.SaleItems)
-            .FirstOrDefaultAsync(p => p.ProductId == id);
+        var product = await _context.Products.FindAsync(id);
 
         if (product == null) return RedirectToAction(nameof(Index));
 
-        if (product.PurchaseItems.Any() || product.SaleItems.Any())
+        var hasPurchases = await _context.PurchaseItems.AnyAsync(pi => pi.ProductId == id);
+        var hasSales = await _context.SaleItems.AnyAsync(si => si.ProductId == id);
+
+        if (hasPurchases || hasSales)
         {
             TempData["Error"] = "Cannot delete this product because it has related purchases or sales records.";
             return RedirectToAction(nameof(Delete), new { id });

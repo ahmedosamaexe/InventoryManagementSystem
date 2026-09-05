@@ -27,9 +27,11 @@ public class Supplier
     public string? Address { get; set; }
 
     [ValidateNever]
+    [BindNever]
     public ICollection<SupplierProduct> SupplierProducts { get; set; }
     = new List<SupplierProduct>();
 
     [ValidateNever]
+    [BindNever]
     public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
 }
