@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Models;
+namespace InventoryManagementSystem.Models;
 
 public class Product
 {
@@ -21,11 +21,15 @@ public class Product
     public int LowStockThreshold { get; set; } = 0;
 
     // Navigation
+    [ValidateNever]
     public Category Category { get; set; } = null!;
 
+    [ValidateNever]
     public ICollection<SupplierProduct> SupplierProducts { get; set; }
     = new List<SupplierProduct>();
 
+    [ValidateNever]
     public ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
+    [ValidateNever]
     public ICollection<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
 }

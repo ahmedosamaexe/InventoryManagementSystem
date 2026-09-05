@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Controllers;
+namespace InventoryManagementSystem.Controllers;
 
 public class ProductsController : Controller
 {
@@ -130,12 +130,21 @@ public class ProductsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var product = await _context.Products.FindAsync(id);
-        if (product != null)
+        var product = await _context.Products
+            .Include(p => p.PurchaseItems)
+            .Include(p => p.SaleItems)
+            .FirstOrDefaultAsync(p => p.ProductId == id);
+
+        if (product == null) return RedirectToAction(nameof(Index));
+
+        if (product.PurchaseItems.Any() || product.SaleItems.Any())
         {
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            TempData["Error"] = "Cannot delete this product because it has related purchases or sales records.";
+            return RedirectToAction(nameof(Delete), new { id });
         }
+
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 }

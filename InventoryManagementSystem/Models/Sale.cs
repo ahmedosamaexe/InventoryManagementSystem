@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Models;
+namespace InventoryManagementSystem.Models;
 
 public class Sale
 {
@@ -12,5 +12,6 @@ public class Sale
     public string? CustomerInfo { get; set; }
 
     // Navigation
+    [ValidateNever]
     public ICollection<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
 }
