@@ -9,6 +9,7 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Supplier> Suppliers { get; set; }
     public DbSet<Product> Products { get; set; }
+    public DbSet<SupplierProduct> SupplierProducts { get; set; }
     public DbSet<Purchase> Purchases { get; set; }
     public DbSet<PurchaseItem> PurchaseItems { get; set; }
     public DbSet<Sale> Sales { get; set; }
@@ -16,6 +17,22 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // SupplierProduct (many-to-many join: Supplier <-> Product)
+        modelBuilder.Entity<SupplierProduct>()
+            .HasKey(sp => new { sp.SupplierId, sp.ProductId });
+
+        modelBuilder.Entity<SupplierProduct>()
+            .HasOne(sp => sp.Supplier)
+            .WithMany(s => s.SupplierProducts)
+            .HasForeignKey(sp => sp.SupplierId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SupplierProduct>()
+            .HasOne(sp => sp.Product)
+            .WithMany(p => p.SupplierProducts)
+            .HasForeignKey(sp => sp.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         // Product
         modelBuilder.Entity<Product>()
             .HasIndex(p => p.SKU)

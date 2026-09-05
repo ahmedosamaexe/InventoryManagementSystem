@@ -1,0 +1,37 @@
+@model IEnumerable<InventoryManagementSystem.Models.Purchase>
+
+@{
+    ViewData["Title"] = "Purchases";
+}
+
+<h1>Purchases</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">New Purchase</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Purchase #</th>
+            <th>Supplier</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var purchase in Model)
+        {
+            <tr>
+                <td>@purchase.PurchaseId</td>
+                <td>@purchase.Supplier?.SupplierName</td>
+                <td>@purchase.PurchaseDate.ToString("g")</td>
+                <td>@purchase.TotalAmount.ToString("C")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@purchase.PurchaseId">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -650,3 +650,73 @@ h1, h2, h3, h4, .brand {
         font-weight: 300;
         opacity: 0.85;
     }
+/* Filter Bar */
+.filter-bar {
+    padding: 16px 20px;
+}
+
+.filter-form {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    flex: 0 0 auto;
+}
+
+.filter-input {
+    min-width: 220px;
+    font-size: 0.9rem;
+}
+
+.filter-select {
+    min-width: 160px;
+    font-size: 0.9rem;
+}
+
+/* Pagination */
+.pagination-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 20px;
+    padding: 12px 0;
+}
+
+.pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+    .pagination-btn:hover:not(.disabled):not(.active) {
+        background: var(--bg);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    .pagination-btn.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+    }
+
+    .pagination-btn.disabled {
+        opacity: 0.45;
+        pointer-events: none;
+        cursor: default;
+    }

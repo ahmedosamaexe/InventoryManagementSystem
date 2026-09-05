@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Models;
+namespace InventoryManagementSystem.Models;
 
 public class PurchaseItem
 {
@@ -12,6 +12,8 @@ public class PurchaseItem
 
     public decimal UnitCost { get; set; }
 
+    [ValidateNever]
     public Purchase Purchase { get; set; } = null!;
+    [ValidateNever]
     public Product Product { get; set; } = null!;
 }

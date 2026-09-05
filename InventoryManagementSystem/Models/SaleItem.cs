@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Models;
+namespace InventoryManagementSystem.Models;
 
 public class SaleItem
 {
@@ -13,6 +13,8 @@ public class SaleItem
     public decimal UnitPrice { get; set; }
 
     // Navigation
+    [ValidateNever]
     public Sale Sale { get; set; } = null!;
+    [ValidateNever]
     public Product Product { get; set; } = null!;
 }

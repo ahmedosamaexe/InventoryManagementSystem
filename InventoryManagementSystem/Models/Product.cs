@@ -1,5 +1,3 @@
-﻿using System.Net.ServerSentEvents;
-
 namespace InventoryManagementSystem.Models;
 
 public class Product
@@ -23,11 +21,19 @@ public class Product
     public int LowStockThreshold { get; set; } = 0;
 
     // Navigation
+    [ValidateNever]
+    [BindNever]
     public Category Category { get; set; } = null!;
 
+    [ValidateNever]
+    [BindNever]
     public ICollection<SupplierProduct> SupplierProducts { get; set; }
     = new List<SupplierProduct>();
 
+    [ValidateNever]
+    [BindNever]
     public ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
+    [ValidateNever]
+    [BindNever]
     public ICollection<SaleItem> SaleItems { get; set; } = new List<SaleItem>();
 }

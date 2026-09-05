@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8" />
@@ -14,7 +14,8 @@
         <aside class="sidebar">
             <a class="brand" asp-controller="Home" asp-action="Index">Inventory<span>Sys</span></a>
             <nav>
-                <a asp-controller="Home" asp-action="Index">Dashboard</a>
+                <a asp-controller="Home" asp-action="Index">Home</a>
+                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
                 <a asp-controller="Categories" asp-action="Index">Categories</a>
                 <a asp-controller="Products" asp-action="Index">Products</a>
                 <a asp-controller="Suppliers" asp-action="Index">Suppliers</a>
@@ -30,7 +31,11 @@
             <main class="page-content">
                 @if (TempData["Success"] != null)
                 {
-                    <div class="alert alert-success">@TempData["Success"]</div>
+                    <div class="alert alert-success" role="alert">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null && ViewData["Title"]?.ToString() != "Delete Product")
+                {
+                    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
                 }
                 @RenderBody()
             </main>
