@@ -1,17 +1,52 @@
-﻿@model List<Product>
+@model InventoryManagementSystem.ViewModels.ProductIndexViewModel
 @{
     ViewData["Title"] = "Products";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <span class="text-muted">Total products: @Model.Count</span>
+    <span class="text-muted">Total products: @Model.TotalCount</span>
     <a asp-action="Create" class="btn btn-accent">+ Add Product</a>
 </div>
 
+<!-- Search & Filter Bar -->
+<div class="panel filter-bar mb-3">
+    <form method="get" asp-action="Index" class="filter-form">
+        <div class="filter-group">
+            <input type="text"
+                   name="search"
+                   value="@Model.SearchTerm"
+                   class="form-control filter-input"
+                   placeholder="Search by name or SKU..." />
+        </div>
+        <div class="filter-group">
+            <select name="categoryId" class="form-select filter-select">
+                <option value="">All Categories</option>
+                @foreach (var cat in Model.Categories)
+                {
+                    <option value="@cat.CategoryId"
+                            selected="@(Model.CategoryId == cat.CategoryId ? "selected" : null)">
+                        @cat.CategoryName
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="filter-group">
+            <select name="stockStatus" class="form-select filter-select">
+                <option value="">All Status</option>
+                <option value="InStock" selected="@(Model.StockStatus == "InStock" ? "selected" : null)">In Stock</option>
+                <option value="LowStock" selected="@(Model.StockStatus == "LowStock" ? "selected" : null)">Low Stock</option>
+                <option value="OutOfStock" selected="@(Model.StockStatus == "OutOfStock" ? "selected" : null)">Out of Stock</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-accent btn-sm">Search</button>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm">Clear</a>
+    </form>
+</div>
+
 <div class="panel">
-    @if (!Model.Any())
+    @if (!Model.Products.Any())
     {
-        <div class="empty-state">No products added yet.</div>
+        <div class="empty-state">No products found.</div>
     }
     else
     {
@@ -23,25 +58,31 @@
                     <th>Category</th>
                     <th>Price</th>
                     <th>Stock</th>
+                    <th>Status</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var p in Model)
+                @foreach (var p in Model.Products)
                 {
                     <tr>
                         <td>@p.ProductName</td>
                         <td class="text-muted">@p.SKU</td>
                         <td>@p.Category.CategoryName</td>
                         <td>@p.UnitPrice.ToString("N2")</td>
+                        <td>@p.StockQuantity</td>
                         <td>
-                            @if (p.StockQuantity <= p.LowStockThreshold)
+                            @if (p.StockQuantity == 0)
                             {
-                                <span class="badge badge-soft-danger">@p.StockQuantity (Low)</span>
+                                <span class="badge badge-soft-danger">Out of Stock</span>
+                            }
+                            else if (p.StockQuantity <= p.LowStockThreshold)
+                            {
+                                <span class="badge badge-soft-warn">Low Stock</span>
                             }
                             else
                             {
-                                <span class="badge badge-soft-accent">@p.StockQuantity</span>
+                                <span class="badge badge-soft-accent">In Stock</span>
                             }
                         </td>
                         <td class="text-nowrap">
@@ -55,3 +96,39 @@
         </table>
     }
 </div>
+
+<!-- Pagination -->
+@if (Model.TotalPages > 1)
+{
+    <nav class="pagination-bar">
+        <a asp-action="Index"
+           asp-route-search="@Model.SearchTerm"
+           asp-route-categoryId="@Model.CategoryId"
+           asp-route-stockStatus="@Model.StockStatus"
+           asp-route-page="@(Model.CurrentPage - 1)"
+           class="pagination-btn @(!Model.HasPreviousPage ? "disabled" : "")">
+            &laquo; Previous
+        </a>
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <a asp-action="Index"
+               asp-route-search="@Model.SearchTerm"
+               asp-route-categoryId="@Model.CategoryId"
+               asp-route-stockStatus="@Model.StockStatus"
+               asp-route-page="@i"
+               class="pagination-btn @(i == Model.CurrentPage ? "active" : "")">
+                @i
+            </a>
+        }
+
+        <a asp-action="Index"
+           asp-route-search="@Model.SearchTerm"
+           asp-route-categoryId="@Model.CategoryId"
+           asp-route-stockStatus="@Model.StockStatus"
+           asp-route-page="@(Model.CurrentPage + 1)"
+           class="pagination-btn @(!Model.HasNextPage ? "disabled" : "")">
+            Next &raquo;
+        </a>
+    </nav>
+}
