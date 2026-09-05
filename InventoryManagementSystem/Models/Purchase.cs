@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Models;
+namespace InventoryManagementSystem.Models;
 
 public class Purchase
 {
@@ -10,6 +10,8 @@ public class Purchase
 
     public decimal TotalAmount { get; set; }
 
+    [ValidateNever]
     public Supplier Supplier { get; set; } = null!;
+    [ValidateNever]
     public ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
 }

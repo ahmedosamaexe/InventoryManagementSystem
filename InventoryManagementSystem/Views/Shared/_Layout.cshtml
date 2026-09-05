@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8" />
@@ -31,7 +31,11 @@
             <main class="page-content">
                 @if (TempData["Success"] != null)
                 {
-                    <div class="alert alert-success">@TempData["Success"]</div>
+                    <div class="alert alert-success" role="alert">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null && ViewData["Title"]?.ToString() != "Delete Product")
+                {
+                    <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
                 }
                 @RenderBody()
             </main>
