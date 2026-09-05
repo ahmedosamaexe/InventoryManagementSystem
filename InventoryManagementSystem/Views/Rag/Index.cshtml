@@ -1,0 +1,22 @@
+﻿@model RagViewModel
+@{
+    ViewData["Title"] = "Assistant";
+}
+
+<div class="form-panel mb-4" style="max-width:640px">
+    <form asp-action="Ask" method="post">
+        <div class="mb-3">
+            <label class="form-label">Ask a question about your inventory</label>
+            <input asp-for="Question" class="form-control" placeholder="e.g. Which products are low on stock?" />
+        </div>
+        <button type="submit" class="btn btn-accent">Ask</button>
+    </form>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.Answer))
+{
+    <div class="panel p-4" style="max-width:640px">
+        <div class="text-muted small mb-2">Answer</div>
+        <div style="white-space: pre-wrap;">@Model.Answer</div>
+    </div>
+}
