@@ -1,4 +1,4 @@
-﻿namespace InventoryManagementSystem.Models;
+namespace InventoryManagementSystem.Models;
 
 public class Supplier
 {
@@ -26,8 +26,10 @@ public class Supplier
     [StringLength(250, ErrorMessage = "Address cannot exceed 250 characters.")]
     public string? Address { get; set; }
 
+    [ValidateNever]
     public ICollection<SupplierProduct> SupplierProducts { get; set; }
     = new List<SupplierProduct>();
 
+    [ValidateNever]
     public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
 }

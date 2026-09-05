@@ -1,9 +1,13 @@
-﻿@model Product
+@model Product
 @{
     ViewData["Title"] = "Delete Product";
 }
 
 <div class="panel p-4" style="max-width:520px">
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mb-3">@TempData["Error"]</div>
+    }
     <p class="mb-1">Are you sure you want to delete the product:</p>
     <h5 class="mb-1">@Model.ProductName</h5>
     <p class="text-muted small mb-3">SKU: @Model.SKU — Category: @Model.Category.CategoryName</p>
