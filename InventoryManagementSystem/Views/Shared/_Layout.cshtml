@@ -1,3 +1,7 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    Func<string, string> isActive = name => currentController == name ? "active" : "";
+}
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
@@ -14,14 +18,45 @@
         <aside class="sidebar">
             <a class="brand" asp-controller="Home" asp-action="Index">Inventory<span>Sys</span></a>
             <nav>
-                <a asp-controller="Home" asp-action="Index">Home</a>
-                <a asp-controller="Dashboard" asp-action="Index">Dashboard</a>
-                <a asp-controller="Categories" asp-action="Index">Categories</a>
-                <a asp-controller="Products" asp-action="Index">Products</a>
-                <a asp-controller="Suppliers" asp-action="Index">Suppliers</a>
-                <a asp-controller="Purchases" asp-action="Index">Purchases</a>
-                <a asp-controller="Sales" asp-action="Index">Sales</a>
-                <a asp-controller="Rag" asp-action="Index">Assistant</a>
+                <div class="sidebar-group-label">Overview</div>
+                <a asp-controller="Home" asp-action="Index" class="@isActive("Home")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9a1 1 0 0 0 1 1h4v-6h3v6h4a1 1 0 0 0 1-1v-9"/></svg>
+                    Home
+                </a>
+                <a asp-controller="Dashboard" asp-action="Index" class="@isActive("Dashboard")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V11M10 20V4M16 20v-6" stroke-linecap="round"/><path d="M4 20h12" stroke-linecap="round"/></svg>
+                    Dashboard
+                </a>
+
+                <div class="sidebar-group-label">Catalog</div>
+                <a asp-controller="Categories" asp-action="Index" class="@isActive("Categories")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12.5 3H5a1 1 0 0 0-1 1v7.5a1 1 0 0 0 .3.7l9 9a1 1 0 0 0 1.4 0l7.5-7.5a1 1 0 0 0 0-1.4l-9-9a1 1 0 0 0-.7-.3Z"/><circle cx="8.5" cy="8.5" r="1.2"/></svg>
+                    Categories
+                </a>
+                <a asp-controller="Products" asp-action="Index" class="@isActive("Products")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 7.5 12 3l8.5 4.5V16.5L12 21l-8.5-4.5Z"/><path d="M3.5 7.5 12 12l8.5-4.5"/><path d="M12 12v9"/></svg>
+                    Products
+                </a>
+                <a asp-controller="Suppliers" asp-action="Index" class="@isActive("Suppliers")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 16V6h11v10"/><path d="M13 9h4l4 4v3h-8"/><circle cx="6.5" cy="17.5" r="1.6"/><circle cx="17.5" cy="17.5" r="1.6"/></svg>
+                    Suppliers
+                </a>
+
+                <div class="sidebar-group-label">Operations</div>
+                <a asp-controller="Purchases" asp-action="Index" class="@isActive("Purchases")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 4h2l2.4 12.1a1 1 0 0 0 1 .9h8.4a1 1 0 0 0 1-.8L20 8H6"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17" cy="20" r="1.2"/></svg>
+                    Purchases
+                </a>
+                <a asp-controller="Sales" asp-action="Index" class="@isActive("Sales")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h12v18l-2.5-1.5L13 21l-2.5-1.5L8 21l-2-1.5Z"/><path d="M9 8h6M9 12h6"/></svg>
+                    Sales
+                </a>
+
+                <div class="sidebar-group-label">Tools</div>
+                <a asp-controller="Rag" asp-action="Index" class="@isActive("Rag")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v10H8l-4 4Z"/><path d="M8 9h8M8 12h5"/></svg>
+                    Assistant
+                </a>
             </nav>
         </aside>
 
