@@ -4,34 +4,53 @@
     ViewData["Title"] = "Purchases";
 }
 
-<h1>Purchases</h1>
+<div class="sales-page">
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">New Purchase</a>
-</p>
+    <div class="sales-count-row">
+        <span>Total Purchases: @Model.Count()</span>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Purchase #</th>
-            <th>Supplier</th>
-            <th>Date</th>
-            <th>Total</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var purchase in Model)
+        <a asp-action="Create" class="btn btn-accent">
+            + New Purchase
+        </a>
+    </div>
+
+    <div class="panel">
+
+        @if (!Model.Any())
         {
-            <tr>
-                <td>@purchase.PurchaseId</td>
-                <td>@purchase.Supplier?.SupplierName</td>
-                <td>@purchase.PurchaseDate.ToString("g")</td>
-                <td>@purchase.TotalAmount.ToString("C")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@purchase.PurchaseId">Details</a>
-                </td>
-            </tr>
+            <div class="sales-empty">
+                <p>No purchases recorded yet.</p>
+            </div>
         }
-    </tbody>
-</table>
+        else
+        {
+            <table class="table-clean sales-table">
+                <thead>
+                    <tr>
+                        <th>Purchase #</th>
+                        <th>Supplier</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var purchase in Model)
+                    {
+                        <tr>
+                            <td>#@purchase.PurchaseId</td>
+                            <td class="sale-customer">@purchase.Supplier?.SupplierName</td>
+                            <td class="sale-date">@purchase.PurchaseDate.ToString("dd MMM yyyy, HH:mm")</td>
+                            <td class="sale-total">@purchase.TotalAmount.ToString("N2")</td>
+                            <td class="text-nowrap">
+                                <a asp-action="Details" asp-route-id="@purchase.PurchaseId" class="btn btn-sm btn-outline-secondary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+    </div>
+
+</div>
