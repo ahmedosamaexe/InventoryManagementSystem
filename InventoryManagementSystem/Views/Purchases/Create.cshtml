@@ -5,41 +5,46 @@
     var products = (List<InventoryManagementSystem.Models.Product>)ViewBag.Products;
 }
 
-<h1>New Purchase</h1>
+<div class="sale-form-panel">
+    <form asp-action="Create" method="post" id="purchaseForm">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label class="form-label">Supplier</label>
+            <select name="SupplierId" class="form-select" required>
+                <option value="">-- Select Supplier --</option>
+                @foreach (var s in suppliers)
+                {
+                    <option value="@s.SupplierId">@s.SupplierName</option>
+                }
+            </select>
+        </div>
 
-<form asp-action="Create" method="post" id="purchaseForm">
-    <div class="mb-3">
-        <label class="form-label">Supplier</label>
-        <select name="SupplierId" class="form-select" required>
-            <option value="">-- Select Supplier --</option>
-            @foreach (var s in suppliers)
-            {
-                <option value="@s.SupplierId">@s.SupplierName</option>
-            }
-        </select>
-    </div>
+        <div class="sale-items-header">
+            <h3>Items</h3>
+            <button type="button" id="addRowBtn" class="btn btn-sm btn-outline-accent">+ Add Product</button>
+        </div>
 
-    <h4>Items</h4>
-    <table class="table" id="itemsTable">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Unit Cost</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- rows are added here by JS -->
-        </tbody>
-    </table>
+        <table class="table-clean" id="itemsTable">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Unit Cost</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- rows are added here by JS -->
+            </tbody>
+        </table>
 
-    <button type="button" id="addRowBtn" class="btn btn-secondary mb-3">+ Add Product</button>
-    <br />
-    <button type="submit" class="btn btn-primary">Save Purchase</button>
-</form>
+        <div class="mt-4">
+            <button type="submit" class="btn btn-accent">Save Purchase</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
 
 <!-- Template for a product select, filled by JS -->
 <script id="productOptionsTemplate" type="text/template">
@@ -71,7 +76,7 @@
                 <input type="number" step="0.01" name="Items[${rowIndex}].UnitCost" min="0" class="form-control cost-input" required />
             </td>
             <td>
-                <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
+                <button type="button" class="btn btn-outline-danger btn-sm remove-row">Remove</button>
             </td>
         `;
         tbody.appendChild(row);
