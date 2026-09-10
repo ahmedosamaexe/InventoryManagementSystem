@@ -190,15 +190,6 @@ dotnet ef migrations add YourMigrationName
 dotnet ef database update
 ```
 
-## Demo Credentials
-
-No demo account is currently seeded in the database. If seed data or a demo login is added later, update this section with the details, for example:
-
-```
-Email:    demo@example.com
-Password: Demo@12345
-```
-
 ## Git Workflow / Team Collaboration
 
 This project was built by a team using a structured GitHub workflow:
@@ -234,7 +225,7 @@ InventoryManagementSystem/
 ├── wwwroot/
 │   ├── css/
 │   └── js/
-├── screenshots/            # add project screenshots here
+├── screenshots/            
 ├── appsettings.json
 ├── appsettings.Development.json   # git-ignored, holds local secrets
 └── README.md
