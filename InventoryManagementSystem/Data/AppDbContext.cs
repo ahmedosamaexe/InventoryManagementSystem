@@ -48,6 +48,13 @@ public class AppDbContext : DbContext
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<Supplier>()
+            .HasIndex(s => s.SupplierName)
+            .IsUnique();
+        modelBuilder.Entity<Category>()
+            .HasIndex(c => c.CategoryName)
+            .IsUnique();
+
         // Purchase
         modelBuilder.Entity<Purchase>()
             .Property(p => p.TotalAmount)
