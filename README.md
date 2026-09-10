@@ -2,7 +2,7 @@
 
 A full-stack inventory, purchasing, and sales management application built with ASP.NET Core MVC and Entity Framework Core. The system tracks products, suppliers, categories, purchases, and sales, and includes an AI-powered assistant that can answer natural-language questions about live inventory data.
 
-[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/)
 [![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4)](https://learn.microsoft.com/aspnet/core)
 [![EF Core](https://img.shields.io/badge/EF%20Core-Code%20First-blue)](https://learn.microsoft.com/ef/core)
 [![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-CC2927)](https://www.microsoft.com/sql-server)
@@ -49,9 +49,9 @@ The system covers the full inventory lifecycle:
 | Database | Microsoft SQL Server |
 | Frontend | Razor Views, Bootstrap 5, custom CSS theme |
 | Fonts | Inter, Space Grotesk |
-| AI / RAG | Google Gemini API (`gemini-2.0-flash`) |
+| AI / RAG | Google Gemini API (`gemini-3.6-flash`) |
 | Source Control | Git and GitHub (branch protection, pull requests, automated Copilot reviews) |
-| IDE | JetBrains Rider |
+| IDE | Visual Studio |
 
 ## Features
 
@@ -73,7 +73,7 @@ The system covers the full inventory lifecycle:
 - Quick-question suggestions and formatted, readable responses.
 
 ### UI / UX
-- Custom dark-themed sidebar with a green accent color.
+- Custom dark-themed sidebar with a purple/violet accent color.
 - Consistent typography using Inter and Space Grotesk.
 - Clean, distraction-free interface with no decorative icons or emojis, focused on data clarity.
 
@@ -120,7 +120,7 @@ Controllers  ->  Services  ->  EF Core DbContext  ->  SQL Server
 The assistant answers questions about inventory using a lightweight retrieval approach rather than a vector database:
 
 - Relevant data is pulled directly from `AppDbContext` at request time and summarized as plain text, which is passed to the Gemini API as context.
-- Model used: `gemini-2.0-flash`.
+- Model used: `gemini-3.6-flash`.
 - The last five question-and-answer pairs are kept in session memory so the assistant retains short-term conversation context.
 - Responses are rendered as formatted HTML inside a chat-bubble interface with a fixed header and message composer, a scrollable message area, quick-question chips, per-answer timestamps, and a loading indicator while a response is being generated.
 
@@ -139,7 +139,7 @@ The assistant answers questions about inventory using a lightweight retrieval ap
 
 ### Prerequisites
 
-- [.NET SDK 8.0](https://dotnet.microsoft.com/download) or later
+- [.NET SDK 10.0](https://dotnet.microsoft.com/download) or later
 - [SQL Server](https://www.microsoft.com/sql-server) (Express, Developer, or LocalDB)
 - A Gemini API key from [Google AI Studio](https://aistudio.google.com/) (required only for the AI assistant feature)
 
@@ -203,7 +203,7 @@ Password: Demo@12345
 
 ## Git Workflow / Team Collaboration
 
-This project was built by a team of four using a structured GitHub workflow:
+This project was built by a team using a structured GitHub workflow:
 
 - **Branch protection** is enabled on `master`; no direct pushes are allowed.
 - All changes go through **pull requests**, reviewed by teammates before merging.
@@ -244,12 +244,12 @@ InventoryManagementSystem/
 
 ## Team
 
-| Name | Role |
-|---|---|
-| Ahmed Osama | Product list search/filter/pagination, AI assistant (RAG) |
-| Israa | Team member |
-| Ibrahim | Team member |
-| Ammar | Team member |
+| Member | GitHub | Main Contribution |
+|---|---|---|
+| **Ahmed Osama** | [`ahmedosamaexe`](https://github.com/ahmedosamaexe) | Products + AI/RAG + Improvements & Fixes |
+| **Esraa** | [`EsraaKamel1194`](https://github.com/EsraaKamel1194) | Suppliers + Sales + Inventory |
+| **Ibrahim** | [`hemaahla`](https://github.com/hemaahla) | Purchasing Module |
+| **Amr Fahmy** | [`Amr-Fahmy-1`](https://github.com/Amr-Fahmy-1) | Dashboard + Landing Page + Purchases UI |
 
 ## License
 
