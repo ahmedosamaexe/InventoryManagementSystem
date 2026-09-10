@@ -1,0 +1,274 @@
+﻿@model InventoryManagementSystem.ViewModels.InventoryIndexViewModel
+
+@{
+    ViewData["Title"] = "Inventory";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Inventory</h1>
+        <p class="text-muted mb-0">
+            Track stock levels and monitor low-stock products.
+        </p>
+    </div>
+</div>
+
+<!-- Inventory Summary -->
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="panel">
+            <div class="text-muted">Total Products</div>
+            <h2 class="mt-2">@Model.TotalProducts</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="panel">
+            <div class="text-muted">Total Units</div>
+            <h2 class="mt-2">@Model.TotalUnits</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="panel">
+            <div class="text-muted">Low Stock</div>
+            <h2 class="mt-2">@Model.LowStockCount</h2>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="panel">
+            <div class="text-muted">Out of Stock</div>
+            <h2 class="mt-2">@Model.OutOfStockCount</h2>
+        </div>
+    </div>
+
+</div>
+
+<!-- Search & Filter -->
+<div class="panel filter-bar mb-4">
+
+    <form method="get"
+          asp-action="Index"
+          class="filter-form">
+
+        <div class="filter-group">
+            <input type="text"
+                   name="search"
+                   value="@Model.SearchTerm"
+                   class="form-control filter-input"
+                   placeholder="Search by name or SKU..." />
+        </div>
+
+        <button type="submit"
+                class="btn btn-accent btn-sm">
+            Search
+        </button>
+
+        <a asp-action="Index"
+           class="btn btn-outline-secondary btn-sm">
+            Clear
+        </a>
+
+    </form>
+
+    
+    <div class="inventory-status-tabs">
+
+        <a asp-action="Index"
+           asp-route-search="@Model.SearchTerm"
+           class="inventory-status-btn @(string.IsNullOrEmpty(Model.StockStatus) ? "active" : "")">
+            All
+        </a>
+
+        <a asp-action="Index"
+           asp-route-search="@Model.SearchTerm"
+           asp-route-stockStatus="InStock"
+           class="inventory-status-btn @(Model.StockStatus == "InStock" ? "active" : "")">
+            In Stock
+        </a>
+
+        <a asp-action="Index"
+           asp-route-search="@Model.SearchTerm"
+           asp-route-stockStatus="LowStock"
+           class="inventory-status-btn @(Model.StockStatus == "LowStock" ? "active" : "")">
+            Low Stock
+        </a>
+
+        <a asp-action="Index"
+           asp-route-search="@Model.SearchTerm"
+           asp-route-stockStatus="OutOfStock"
+           class="inventory-status-btn @(Model.StockStatus == "OutOfStock" ? "active" : "")">
+            Out of Stock
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- Low Stock Alerts -->
+@if (Model.LowStockCount > 0)
+{
+    <div class="panel mb-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <div>
+                <h3 class="mb-1">Low Stock Alerts</h3>
+                <p class="text-muted mb-0">
+                    Products that need replenishment.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table-clean">
+
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Current Stock</th>
+                        <th>Threshold</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var product in Model.Products
+                        .Where(p =>
+                            p.StockQuantity > 0 &&
+                            p.StockQuantity <= p.LowStockThreshold))
+                    {
+                        <tr>
+
+                            <td>
+                                @product.ProductName
+                            </td>
+
+                            <td class="text-muted">
+                                @product.SKU
+                            </td>
+
+                            <td>
+                                @product.StockQuantity
+                            </td>
+
+                            <td>
+                                @product.LowStockThreshold
+                            </td>
+
+                            <td>
+                                <span class="badge badge-soft-warn">
+                                    Low Stock
+                                </span>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+}
+
+<!-- Inventory Table -->
+
+<div class="panel">
+
+    @if (!Model.Products.Any())
+    {
+        <div class="empty-state">
+            No inventory items found.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+
+            <table class="table-clean">
+
+                <thead>
+
+                    <tr>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Category</th>
+                        <th>Current Stock</th>
+                        <th>Low Stock Threshold</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var product in Model.Products)
+                    {
+                        <tr>
+
+                            <td>
+                                @product.ProductName
+                            </td>
+
+                            <td class="text-muted">
+                                @product.SKU
+                            </td>
+
+                            <td>
+                                @product.Category.CategoryName
+                            </td>
+
+                            <td>
+                                <strong>
+                                    @product.StockQuantity
+                                </strong>
+                            </td>
+
+                            <td>
+                                @product.LowStockThreshold
+                            </td>
+
+                            <td>
+
+                                @if (product.StockQuantity == 0)
+                                {
+                                    <span class="badge badge-soft-danger">
+                                        Out of Stock
+                                    </span>
+                                }
+                                else if (product.StockQuantity <= product.LowStockThreshold)
+                                {
+                                    <span class="badge badge-soft-warn">
+                                        Low Stock
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-soft-accent">
+                                        In Stock
+                                    </span>
+                                }
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</div>
