@@ -217,8 +217,8 @@ InventoryManagementSystem/
 │   ├── Sale.cs
 │   └── SaleItem.cs
 ├── Services/
-│   ├── StockService.cs
-│   └── RagAssistantService.cs
+│   └── StockService.cs
+├── ViewModels/
 ├── Data/
 │   └── AppDbContext.cs
 ├── Views/
