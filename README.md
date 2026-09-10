@@ -113,8 +113,6 @@ Controllers  ->  Services  ->  EF Core DbContext  ->  SQL Server
 ### Dashboard
 ![Dashboard](screenshots/dashboard.png)
 
-> More views can be added the same way. Save the image in `screenshots/` and add a line like `![Description](screenshots/filename.png)`. Worth adding later: Product List (search/filters/pagination), Add Purchase, Record Sale, and the AI Assistant chat.
-
 ## AI Assistant (RAG)
 
 The assistant answers questions about inventory using a lightweight retrieval approach rather than a vector database:
