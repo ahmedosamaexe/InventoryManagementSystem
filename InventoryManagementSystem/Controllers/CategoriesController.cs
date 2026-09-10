@@ -41,6 +41,14 @@ public class CategoriesController : Controller
     {
         if (!ModelState.IsValid) return View(category);
 
+        var exists = await _context.Categories
+            .AnyAsync(c => c.CategoryName.ToLower() == category.CategoryName.Trim().ToLower());
+        if (exists)
+        {
+            ModelState.AddModelError("CategoryName", "A category with this name already exists.");
+            return View(category);
+        }
+
         _context.Add(category);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
@@ -62,6 +70,15 @@ public class CategoriesController : Controller
     {
         if (id != category.CategoryId) return NotFound();
         if (!ModelState.IsValid) return View(category);
+
+        var exists = await _context.Categories
+            .AnyAsync(c => c.CategoryName.ToLower() == category.CategoryName.Trim().ToLower()
+                        && c.CategoryId != id);
+        if (exists)
+        {
+            ModelState.AddModelError("CategoryName", "A category with this name already exists.");
+            return View(category);
+        }
 
         _context.Update(category);
         await _context.SaveChangesAsync();

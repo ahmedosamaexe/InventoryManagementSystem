@@ -102,6 +102,15 @@ public class ProductsController : Controller
             return View(product);
         }
 
+        var exists = await _context.Products
+            .AnyAsync(p => p.ProductName.ToLower() == product.ProductName.Trim().ToLower());
+        if (exists)
+        {
+            ModelState.AddModelError("ProductName", "A product with this name already exists.");
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            return View(product);
+        }
+
         _context.Add(product);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
@@ -126,6 +135,16 @@ public class ProductsController : Controller
 
         if (!ModelState.IsValid)
         {
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            return View(product);
+        }
+
+        var exists = await _context.Products
+            .AnyAsync(p => p.ProductName.ToLower() == product.ProductName.Trim().ToLower()
+                        && p.ProductId != id);
+        if (exists)
+        {
+            ModelState.AddModelError("ProductName", "A product with this name already exists.");
             ViewBag.Categories = await _context.Categories.ToListAsync();
             return View(product);
         }
