@@ -142,7 +142,8 @@
                 <span class="text-danger error-msg" style="display:none;">Quantity must be greater than 0</span>
             </td>
             <td>
-                <input type="number" step="0.01" name="Items[${rowIndex}].UnitCost" min="0" class="form-control cost-input" required />
+                <input type="number" step="0.01" name="Items[${rowIndex}].UnitCost" min="0.01" class="form-control cost-input" required />
+                <span class="text-danger error-msg" style="display:none;">Unit cost must be greater than 0</span>
             </td>
             <td>
                 <button type="button" class="btn btn-outline-danger btn-sm remove-row">Remove</button>
@@ -170,10 +171,20 @@
         }
     });
 
-    // Simple client-side validation: quantity must be a positive number
+    // Client-side validation: quantity and unit cost must be positive numbers
     document.getElementById('purchaseForm').addEventListener('submit', function (e) {
         let valid = true;
         document.querySelectorAll('.qty-input').forEach(input => {
+            const errorSpan = input.nextElementSibling;
+            if (!input.value || Number(input.value) <= 0) {
+                errorSpan.style.display = 'inline';
+                valid = false;
+            } else {
+                errorSpan.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('.cost-input').forEach(input => {
             const errorSpan = input.nextElementSibling;
             if (!input.value || Number(input.value) <= 0) {
                 errorSpan.style.display = 'inline';

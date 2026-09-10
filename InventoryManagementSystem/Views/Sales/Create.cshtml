@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "New Sale";
     var products = (List<InventoryManagementSystem.Models.Product>)ViewBag.Products;
 }
@@ -9,7 +9,7 @@
 
         <div class="mb-3">
             <label class="form-label">Customer Name / Info</label>
-            <input type="text" name="customerInfo" class="form-control" value="@ViewBag.CustomerInfo" placeholder="e.g. Ahmed Mostafa — leave empty for walk-in" />
+            <input type="text" name="customerInfo" class="form-control" value="@ViewBag.CustomerInfo" placeholder="e.g. Ahmed Mostafa — leave empty for walk-in" maxlength="150" />
         </div>
 
         <div class="sale-items-header">
@@ -222,12 +222,27 @@
         document.getElementById('saleForm').addEventListener('submit', function(e) {
             const rows = itemsContainer.querySelectorAll('.sale-item-row');
             let hasValidItem = false;
+            let hasInvalidQty = false;
             rows.forEach(row => {
-                if (row.querySelector('.product-id-input').value) hasValidItem = true;
+                const productId = row.querySelector('.product-id-input').value;
+                const qty = parseInt(row.querySelector('.qty-input').value, 10) || 0;
+                if (productId) {
+                    hasValidItem = true;
+                    if (qty < 1) {
+                        hasInvalidQty = true;
+                        const qtyError = row.querySelector('.qty-error');
+                        if (qtyError) qtyError.textContent = 'Quantity must be at least 1';
+                        row.querySelector('.qty-input').classList.add('is-invalid');
+                    }
+                }
             });
             if (!hasValidItem) {
                 e.preventDefault();
                 alert('Please add at least one valid product to the sale.');
+                return;
+            }
+            if (hasInvalidQty) {
+                e.preventDefault();
             }
         });
 
