@@ -20,6 +20,7 @@
             </select>
         </div>
 
+
         <div class="sale-items-header">
             <h3>Items</h3>
             <button type="button" id="addRowBtn" class="btn btn-sm btn-outline-accent">+ Add Product</button>
@@ -39,6 +40,12 @@
             </tbody>
         </table>
 
+        <div class="purchase-total">
+            <strong>Total:</strong>
+            <span id="purchaseTotal">0.00</span>
+        </div>
+
+
         <div class="mt-4">
             <button type="submit" class="btn btn-accent">Save Purchase</button>
             <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
@@ -57,6 +64,23 @@
 <script>
     let rowIndex = 0;
     const productOptionsHtml = document.getElementById('productOptionsTemplate').innerHTML;
+
+    function updatePurchaseTotal() {
+        let total = 0;
+
+        document.querySelectorAll('#itemsTable tbody tr').forEach(row => {
+            const quantityInput = row.querySelector('.qty-input');
+            const costInput = row.querySelector('.cost-input');
+
+            const quantity = Number(quantityInput?.value) || 0;
+            const unitCost = Number(costInput?.value) || 0;
+
+            total += quantity * unitCost;
+        });
+
+        document.getElementById('purchaseTotal').textContent =
+            total.toFixed(2);
+    }
 
     function addRow() {
         const tbody = document.querySelector('#itemsTable tbody');
@@ -80,6 +104,14 @@
             </td>
         `;
         tbody.appendChild(row);
+        row.querySelector('.qty-input')
+            .addEventListener('input', updatePurchaseTotal);
+
+        row.querySelector('.cost-input')
+            .addEventListener('input', updatePurchaseTotal);
+
+        updatePurchaseTotal();
+
         rowIndex++;
     }
 
@@ -89,6 +121,7 @@
     document.querySelector('#itemsTable tbody').addEventListener('click', function (e) {
         if (e.target.classList.contains('remove-row')) {
             e.target.closest('tr').remove();
+            updatePurchaseTotal();
         }
     });
 

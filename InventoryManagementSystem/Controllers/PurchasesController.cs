@@ -98,7 +98,22 @@ namespace InventoryManagementSystem.Controllers
 
                     // Stock increases automatically when a purchase is made
                     product.StockQuantity += itemInput.Quantity;
+
+                    var supplierProductExists = await _context.SupplierProducts
+                       .AnyAsync(sp =>
+                           sp.SupplierId == model.SupplierId &&
+                           sp.ProductId == itemInput.ProductId);
+
+                    if (!supplierProductExists)
+                    {
+                        _context.SupplierProducts.Add(new SupplierProduct
+                        {
+                            SupplierId = model.SupplierId,
+                            ProductId = itemInput.ProductId
+                        });
+                    }
                 }
+
 
                 purchase.TotalAmount = total;
 
