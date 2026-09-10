@@ -78,6 +78,7 @@ public class SalesController : Controller
                     items.Add((productIds[i], quantities[i]));
             }
         }
+        items = items .GroupBy(x => x.ProductId) .Select(g => ( ProductId: g.Key, Quantity: g.Sum(x => x.Quantity) )) .ToList();
 
         if (!items.Any())
         {

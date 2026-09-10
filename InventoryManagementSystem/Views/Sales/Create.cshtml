@@ -31,12 +31,6 @@
     </form>
 </div>
 
-<datalist id="productOptions">
-    @foreach (var p in products)
-    {
-        <option value="@p.ProductName"></option>
-    }
-</datalist>
 
 @section Scripts {
     <script>
@@ -48,8 +42,8 @@
         const grandTotalEl = document.getElementById('grandTotal');
         const submitBtn = document.getElementById('submitBtn');
 
-        function findProduct(nameInput) {
-            return productsByName.get(nameInput.value.trim().toLowerCase());
+        function findProduct(productId) {
+            return products.find(p => String(p.id) === String(productId));
         }
 
         function makeRow() {
@@ -58,8 +52,12 @@
             row.innerHTML = `
                         <div class="sale-item-field">
                             <label>Product</label>
-                            <input type="text" class="form-control product-name-input" list="productOptions" placeholder="Type product name" autocomplete="off" />
-                            <input type="hidden" class="product-id-input" name="productIds" value="" />
+                            <select class="form-control product-select">
+                            <option value="">Select Product</option>
+                            ${products.map(p => `
+                           <option value="${p.id}">${p.name}</option> `).join('')}
+                           </select>
+                          <input type="hidden" class="product-id-input" name="productIds" value="" />
                         </div>
                         <div class="sale-item-field">
                             <div class="stock-hint">Available: —</div>
@@ -74,7 +72,7 @@
                         <button type="button" class="btn btn-outline-danger btn-sm remove-row-btn">Remove</button>
                     `;
 
-            const nameInput = row.querySelector('.product-name-input');
+            const productSelect = row.querySelector('.product-select');
             const idInput = row.querySelector('.product-id-input');
             const stockHint = row.querySelector('.stock-hint');
             const qtyInput = row.querySelector('.qty-input');
@@ -83,7 +81,7 @@
             const removeBtn = row.querySelector('.remove-row-btn');
 
             function validateQuantity() {
-                const match = findProduct(nameInput);
+                const match = findProduct(productSelect.value);
                 const qty = parseInt(qtyInput.value, 10) || 0;
 
                 if (match && qty > match.stock) {
@@ -97,21 +95,25 @@
                 return true;
             }
 
-            function updateLineTotal() {
-                const match = findProduct(nameInput);
-                const qty = parseInt(qtyInput.value, 10) || 0;
-                lineTotalEl.textContent = match ? (qty * match.price).toFixed(2) : '0.00';
-                updateGrandTotal();
-            }
-
             function onProductChange() {
-                const match = findProduct(nameInput);
+
+                const match = findProduct(productSelect.value);
 
                 if (match) {
+
                     idInput.value = match.id;
-                    stockHint.textContent = `Available: ${match.stock} in stock — Price: ${match.price.toFixed(2)}`;
+
+                    stockHint.textContent =
+                        `Available: ${match.stock} in stock — Price: ${match.price.toFixed(2)}`;
+
+                    if (mergeDuplicateProduct()) {
+                        return;
+                    }
+
                 } else {
+
                     idInput.value = '';
+
                     stockHint.textContent = 'Available: —';
                 }
 
@@ -120,13 +122,74 @@
                 updateSubmitState();
             }
 
+            function mergeDuplicateProduct() {
+
+                const productId = productSelect.value;
+
+                if (!productId) {
+                    return false;
+                }
+
+                const currentRows =
+                    itemsContainer.querySelectorAll('.sale-item-row');
+
+                for (const existingRow of currentRows) {
+
+                    if (existingRow === row) {
+                        continue;
+                    }
+
+                    const existingIdInput =
+                        existingRow.querySelector('.product-id-input');
+
+                    if (existingIdInput.value === productId) {
+
+                        const existingQtyInput =
+                            existingRow.querySelector('.qty-input');
+
+                        const currentQuantity =
+                            parseInt(qtyInput.value, 10) || 0;
+
+                        const existingQuantity =
+                            parseInt(existingQtyInput.value, 10) || 0;
+
+                        existingQtyInput.value =
+                            existingQuantity + currentQuantity;
+
+                        existingQtyInput.dispatchEvent(
+                            new Event('input', { bubbles: true })
+                        );
+
+                        row.remove();
+
+                        updateGrandTotal();
+                        updateSubmitState();
+
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
             function onQuantityChange() {
                 validateQuantity();
                 updateLineTotal();
                 updateSubmitState();
             }
+            function updateLineTotal() {
 
-            nameInput.addEventListener('input', onProductChange);
+                const match = findProduct(productSelect.value);
+
+                const qty = parseInt(qtyInput.value, 10) || 0;
+
+                lineTotalEl.textContent =
+                    match ? (qty * match.price).toFixed(2) : '0.00';
+
+                updateGrandTotal();
+            }
+
+            productSelect.addEventListener('change', onProductChange);
             qtyInput.addEventListener('input', onQuantityChange);
             removeBtn.addEventListener('click', () => {
                 row.remove();
