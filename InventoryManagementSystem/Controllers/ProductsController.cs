@@ -119,7 +119,6 @@ public class ProductsController : Controller
             ViewBag.Categories = await _context.Categories.ToListAsync();
             return View(product);
         }
-
         _context.Add(product);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
@@ -167,7 +166,6 @@ public class ProductsController : Controller
             ViewBag.Categories = await _context.Categories.ToListAsync();
             return View(product);
         }
-
         _context.Update(product);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
