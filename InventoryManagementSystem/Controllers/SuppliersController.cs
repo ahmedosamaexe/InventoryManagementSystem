@@ -62,6 +62,19 @@ public class SuppliersController : Controller
             return View(supplier);
         }
 
+        var supplierNameExists = await _context.Suppliers
+            .AnyAsync(s => s.SupplierName.ToLower() == supplier.SupplierName.ToLower());
+
+        if (supplierNameExists)
+        {
+            ModelState.AddModelError(
+                "SupplierName",
+                "A supplier with this name already exists."
+            );
+
+            return View(supplier);
+        }
+
         _context.Suppliers.Add(supplier);
 
         await _context.SaveChangesAsync();
@@ -88,7 +101,6 @@ public class SuppliersController : Controller
         return View(supplier);
     }
 
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(
@@ -105,10 +117,24 @@ public class SuppliersController : Controller
             return View(supplier);
         }
 
+        var supplierNameExists = await _context.Suppliers
+            .AnyAsync(s =>
+                s.SupplierId != supplier.SupplierId &&
+                s.SupplierName.ToLower() == supplier.SupplierName.ToLower());
+
+        if (supplierNameExists)
+        {
+            ModelState.AddModelError(
+                "SupplierName",
+                "A supplier with this name already exists."
+            );
+
+            return View(supplier);
+        }
+
         try
         {
             _context.Update(supplier);
-
             await _context.SaveChangesAsync();
         }
         catch (DbUpdateConcurrencyException)
@@ -123,7 +149,6 @@ public class SuppliersController : Controller
 
         return RedirectToAction(nameof(Index));
     }
-
 
     public async Task<IActionResult> Delete(int? id)
     {
