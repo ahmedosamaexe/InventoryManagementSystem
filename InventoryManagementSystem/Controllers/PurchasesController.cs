@@ -1,12 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using InventoryManagementSystem.Data;
-using InventoryManagementSystem.Models;
-using InventoryManagementSystem.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
 namespace InventoryManagementSystem.Controllers
 {
     public class PurchasesController : Controller
@@ -114,7 +105,6 @@ namespace InventoryManagementSystem.Controllers
                     }
                 }
 
-
                 purchase.TotalAmount = total;
 
                 _context.Purchases.Add(purchase);
@@ -130,6 +120,38 @@ namespace InventoryManagementSystem.Controllers
                 await PopulateDropdownsAsync();
                 return View(model);
             }
+        }
+
+        // GET: Purchases/ProductsBySupplier?supplierId=5
+        [HttpGet]
+        public async Task<IActionResult> ProductsBySupplier(int supplierId)
+        {
+            var products = await _context.SupplierProducts
+                .Where(sp => sp.SupplierId == supplierId)
+                .OrderBy(sp => sp.Product.ProductName)
+                .Select(sp => new
+                {
+                    id = sp.Product.ProductId,
+                    name = sp.Product.ProductName,
+                    price = sp.Product.UnitPrice
+                })
+                .ToListAsync();
+
+            // Fallback: supplier has no linked products yet, show full catalog
+            if (!products.Any())
+            {
+                products = await _context.Products
+                    .OrderBy(p => p.ProductName)
+                    .Select(p => new
+                    {
+                        id = p.ProductId,
+                        name = p.ProductName,
+                        price = p.UnitPrice
+                    })
+                    .ToListAsync();
+            }
+
+            return Json(products);
         }
 
         private async Task PopulateDropdownsAsync()
