@@ -11,13 +11,14 @@
 
         <div class="mb-3">
             <label class="form-label">Supplier</label>
-            <select name="SupplierId" class="form-select" required>
+            <select name="SupplierId" id="supplierSelect" class="form-select" required>
                 <option value="">-- Select Supplier --</option>
                 @foreach (var s in suppliers)
                 {
                     <option value="@s.SupplierId">@s.SupplierName</option>
                 }
             </select>
+            <span class="text-muted small" id="supplierHint"></span>
         </div>
 
 
@@ -53,7 +54,7 @@
     </form>
 </div>
 
-<!-- Template for a product select, filled by JS -->
+<!-- Template for a product select (full catalog, used before a supplier is picked) -->
 <script id="productOptionsTemplate" type="text/template">
     @foreach (var p in products)
     {
@@ -63,7 +64,51 @@
 
 <script>
     let rowIndex = 0;
-    const productOptionsHtml = document.getElementById('productOptionsTemplate').innerHTML;
+    const fallbackProductOptionsHtml = document.getElementById('productOptionsTemplate').innerHTML;
+    let productOptionsHtml = fallbackProductOptionsHtml;
+
+    function formatCurrency(v) {
+        return '$' + Number(v).toFixed(2);
+    }
+
+    function refreshAllProductSelects() {
+        document.querySelectorAll('#itemsTable tbody select').forEach(select => {
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">-- Select Product --</option>' + productOptionsHtml;
+            if ([...select.options].some(o => o.value === currentValue)) {
+                select.value = currentValue;
+            }
+        });
+    }
+
+    document.getElementById('supplierSelect').addEventListener('change', function () {
+        const supplierId = this.value;
+        const hint = document.getElementById('supplierHint');
+
+        if (!supplierId) {
+            productOptionsHtml = fallbackProductOptionsHtml;
+            hint.textContent = '';
+            refreshAllProductSelects();
+            return;
+        }
+
+        hint.textContent = 'Loading products for this supplier...';
+
+        fetch(`/Purchases/ProductsBySupplier?supplierId=${supplierId}`)
+            .then(res => res.json())
+            .then(data => {
+                productOptionsHtml = data
+                    .map(p => `<option value="${p.id}">${p.name} (${formatCurrency(p.price)})</option>`)
+                    .join('');
+                hint.textContent = `${data.length} product(s) available from this supplier`;
+                refreshAllProductSelects();
+            })
+            .catch(() => {
+                hint.textContent = 'Could not load supplier products, showing full catalog instead.';
+                productOptionsHtml = fallbackProductOptionsHtml;
+                refreshAllProductSelects();
+            });
+    });
 
     function updatePurchaseTotal() {
         let total = 0;
