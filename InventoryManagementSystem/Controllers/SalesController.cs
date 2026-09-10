@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace InventoryManagementSystem.Controllers;
 
@@ -79,6 +79,15 @@ public class SalesController : Controller
             }
         }
         items = items .GroupBy(x => x.ProductId) .Select(g => ( ProductId: g.Key, Quantity: g.Sum(x => x.Quantity) )) .ToList();
+
+        // Server-side: validate CustomerInfo length
+        if (!string.IsNullOrEmpty(customerInfo) && customerInfo.Length > 150)
+        {
+            ModelState.AddModelError("", "Customer info cannot exceed 150 characters.");
+            await PopulateProductsAsync();
+            ViewBag.CustomerInfo = customerInfo;
+            return View();
+        }
 
         if (!items.Any())
         {

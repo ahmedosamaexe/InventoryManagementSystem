@@ -59,6 +59,25 @@ namespace InventoryManagementSystem.Controllers
                 return View(model);
             }
 
+            // Server-side: validate each item
+            if (model.Items != null)
+            {
+                for (int i = 0; i < model.Items.Count; i++)
+                {
+                    var item = model.Items[i];
+                    if (item.Quantity < 1)
+                        ModelState.AddModelError($"Items[{i}].Quantity", "Quantity must be at least 1.");
+                    if (item.UnitCost <= 0)
+                        ModelState.AddModelError($"Items[{i}].UnitCost", "Unit cost must be greater than 0.");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                await PopulateDropdownsAsync();
+                return View(model);
+            }
+
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {

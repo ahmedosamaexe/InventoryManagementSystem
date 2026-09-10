@@ -1,4 +1,4 @@
-﻿@model Category
+@model Category
 @{
     ViewData["Title"] = "Add Category";
 }
@@ -9,16 +9,29 @@
 
         <div class="mb-3">
             <label asp-for="CategoryName" class="form-label">Category Name</label>
-            <input asp-for="CategoryName" class="form-control" placeholder="e.g. Electronics" />
+            <input asp-for="CategoryName" class="form-control" placeholder="e.g. Electronics" maxlength="100" />
             <span asp-validation-for="CategoryName" class="text-danger small"></span>
         </div>
 
         <div class="mb-4">
             <label asp-for="Description" class="form-label">Description (optional)</label>
-            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <textarea asp-for="Description" class="form-control" rows="3" maxlength="500"></textarea>
+            <span asp-validation-for="Description" class="text-danger small"></span>
         </div>
 
         <button type="submit" class="btn btn-accent">Save</button>
         <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
     </form>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            const form = $("form");
+            form.find("input, textarea").on("input blur", function () {
+                $(this).valid();
+            });
+        });
+    </script>
+}
